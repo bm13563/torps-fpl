@@ -26,12 +26,12 @@ const router = createRouter({
   routes,
 })
 
-// router.beforeEach((to, from, next) => {
-//   if (to.matched.length === 0) {
-//     next("/firsts?tab=Players")
-//   } else {
-//     next()
-//   }
-// })
+router.beforeEach((to, from, next) => {
+  if (to.matched.length === 0) {
+    next("/firsts?tab=Players")
+  } else {
+    next()
+  }
+})
 
 export default router
