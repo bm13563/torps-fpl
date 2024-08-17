@@ -38,8 +38,6 @@ import {
 const $route = useRoute()
 const $router = useRouter()
 
-console.log($route.query.tab)
-
 const props = defineProps(["source"])
 
 const tab = ref($route.query.tab)
