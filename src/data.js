@@ -1,11 +1,10 @@
 import Papa from "papaparse"
 
+const basePath = import.meta.env.BASE_URL;  // Vite automatically handles this
+
 const getData = (path) => {
-  if (process.env.NODE_ENV === "production") {
-    path = `/torps-fpl${path}`
-  }
   return new Promise((resolve, reject) => {
-    fetch(path)
+    fetch(`${basePath}${path}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
