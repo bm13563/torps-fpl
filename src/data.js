@@ -1,6 +1,9 @@
 import Papa from "papaparse"
 
 const getData = (path) => {
+  if (process.env.NODE_ENV === "production") {
+    path = `/torps-fpl${path}`
+  }
   return new Promise((resolve, reject) => {
     fetch(path)
       .then((response) => {
