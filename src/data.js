@@ -77,19 +77,19 @@ export const aggregateGamesOnPlayer = (data) => {
 }
 
 export const filterDataByPlayerNames = (data, playerNames) => {
-  return data.filter(player => playerNames.includes(player.player))
+  return data.filter((player) => playerNames.includes(player.player))
 }
 
 export const calculatePointsForTeams = (teams, players) => {
   const points = []
-  const keys = Object.keys(teams[0]).filter(key => key !== "owner")
-  teams.forEach(team => {
+  const keys = Object.keys(teams[0]).filter((key) => key !== "owner")
+  teams.forEach((team) => {
     points.push({
       owner: team.owner,
       points: keys.reduce((acc, key) => {
-        const points = players.find(player => player.player === team[key])?.points || 0
+        const points = players.find((player) => player.player === team[key])?.points || 0
         return acc + points
-      }, 0)
+      }, 0),
     })
   })
   return points

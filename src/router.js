@@ -28,10 +28,10 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.matched.length === 0) {
-    next('/firsts?tab=Players');
+    next("/firsts?tab=Players")
   } else {
-    next();
+    next()
   }
-});
+})
 
 export default router

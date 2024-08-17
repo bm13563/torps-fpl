@@ -1,11 +1,6 @@
 <template>
   <div class="container">
-    <SelectButton
-      v-model="tab"
-      :options="TABS"
-      :allowEmpty="false"
-      class="title"
-    />
+    <SelectButton v-model="tab" :options="TABS" :allowEmpty="false" class="title" />
     <div v-if="isPlayers" class="show-extended">
       <p>Show all player data</p>
       <ToggleSwitch v-model="showExtended" />
@@ -22,14 +17,14 @@
 </template>
 
 <script setup>
-import { onBeforeMount, ref, watch, computed } from "vue";
+import { onBeforeMount, ref, watch, computed } from "vue"
 
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import ToggleSwitch from "primevue/toggleswitch";
-import SelectButton from "primevue/selectbutton";
+import DataTable from "primevue/datatable"
+import Column from "primevue/column"
+import ToggleSwitch from "primevue/toggleswitch"
+import SelectButton from "primevue/selectbutton"
 
-import { useRoute, useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router"
 
 import {
   getPlayers,
@@ -38,55 +33,55 @@ import {
   aggregateGamesOnPlayer,
   filterDataByPlayerNames,
   calculatePointsForTeams,
-} from "../data";
+} from "../data"
 
-const $route = useRoute();
-const $router = useRouter();
+const $route = useRoute()
+const $router = useRouter()
 
-console.log($route.query.tab);
+console.log($route.query.tab)
 
-const props = defineProps(["source"]);
+const props = defineProps(["source"])
 
-const tab = ref($route.query.tab);
-const playerData = ref([]);
-const teamData = ref([]);
-const tableData = ref([]);
-const tableColumns = ref([]);
-const showExtended = ref(false);
+const tab = ref($route.query.tab)
+const playerData = ref([])
+const teamData = ref([])
+const tableData = ref([])
+const tableColumns = ref([])
+const showExtended = ref(false)
 
-const isPlayers = computed(() => tab.value === "Players");
+const isPlayers = computed(() => tab.value === "Players")
 
 const chooseData = (tab) => {
   if (tab === "Players") {
-    tableData.value = playerData.value;
-    tableColumns.value = PLAYER_COLUMNS;
+    tableData.value = playerData.value
+    tableColumns.value = PLAYER_COLUMNS
   } else {
-    tableData.value = teamData.value;
-    tableColumns.value = TEAM_COLUMNS;
+    tableData.value = teamData.value
+    tableColumns.value = TEAM_COLUMNS
   }
-};
+}
 
 watch(tab, (tab) => {
-  $router.push({ query: { tab } });
-  chooseData(tab);
-});
+  $router.push({ query: { tab } })
+  chooseData(tab)
+})
 
 onBeforeMount(async () => {
-  const players = await getPlayers(props.source);
-  const games = await getGames();
-  const aggregated = aggregateGamesOnPlayer(games);
-  const playerNames = players.map((player) => player.player);
-  const aggregatedPlayerData = filterDataByPlayerNames(aggregated, playerNames);
-  aggregatedPlayerData.sort((a, b) => b.points - a.points);
-  playerData.value = aggregatedPlayerData;
+  const players = await getPlayers(props.source)
+  const games = await getGames()
+  const aggregated = aggregateGamesOnPlayer(games)
+  const playerNames = players.map((player) => player.player)
+  const aggregatedPlayerData = filterDataByPlayerNames(aggregated, playerNames)
+  aggregatedPlayerData.sort((a, b) => b.points - a.points)
+  playerData.value = aggregatedPlayerData
 
-  const teams = await getTeams(props.source);
-  const summed = calculatePointsForTeams(teams, aggregatedPlayerData);
-  summed.sort((a, b) => b.points - a.points);
-  teamData.value = summed;
+  const teams = await getTeams(props.source)
+  const summed = calculatePointsForTeams(teams, aggregatedPlayerData)
+  summed.sort((a, b) => b.points - a.points)
+  teamData.value = summed
 
-  chooseData(tab.value);
-});
+  chooseData(tab.value)
+})
 </script>
 
 <style scoped>
@@ -159,7 +154,7 @@ onBeforeMount(async () => {
 </style>
 
 <script>
-const TABS = ["Players", "Teams"];
+const TABS = ["Players", "Teams"]
 
 const TEAM_COLUMNS = [
   {
@@ -172,7 +167,7 @@ const TEAM_COLUMNS = [
     header: "Points",
     default: true,
   },
-];
+]
 
 const PLAYER_COLUMNS = [
   {
@@ -245,5 +240,5 @@ const PLAYER_COLUMNS = [
     header: "Points",
     default: true,
   },
-];
+]
 </script>
