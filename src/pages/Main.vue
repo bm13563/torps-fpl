@@ -34,14 +34,16 @@ import { getPlayers, getTeams, getLastUpdated } from "../data"
 const $route = useRoute()
 const $router = useRouter()
 
-const props = defineProps(["source"])
-
 const loading = ref(true)
-const tab = ref($route.query.tab)
+
+const tab = ref($route.query.tab || TABS[0])
+const source = ref($route.query.source || SOURCES[0])
+
 const playerData = ref([])
 const teamData = ref([])
 const lastUpdated = ref()
 const tableData = ref([])
+
 const tableColumns = ref([])
 const showExtended = ref(false)
 
@@ -58,17 +60,18 @@ const chooseData = (tab) => {
 }
 
 watch(tab, (tab) => {
-  $router.push({ query: { tab } })
   chooseData(tab)
+  $router.push({ query: { tab, source: source.value } })
 })
 
 onBeforeMount(async () => {
-  playerData.value = await getPlayers(props.source)
-  teamData.value = await getTeams(props.source)
+  playerData.value = await getPlayers(source.value)
+  teamData.value = await getTeams(source.value)
   lastUpdated.value = await getLastUpdated()
 
   chooseData(tab.value)
   loading.value = false
+  $router.push({ query: { tab: tab.value, source: source.value } })
 })
 </script>
 
@@ -149,6 +152,8 @@ onBeforeMount(async () => {
 
 <script>
 const TABS = ["Players", "Teams"]
+
+const SOURCES = ["firsts", "club"]
 
 const TEAM_COLUMNS = [
   {
