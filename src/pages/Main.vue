@@ -5,7 +5,8 @@
       <p>Show all player data</p>
       <ToggleSwitch v-model="showExtended" />
     </div>
-    <DataTable :value="tableData">
+    <ProgressSpinner v-if="loading" />
+    <DataTable v-else :value="tableData">
       <Column
         v-for="column in tableColumns.filter((c) => showExtended || c.default)"
         :key="column.field"
@@ -23,23 +24,18 @@ import DataTable from "primevue/datatable"
 import Column from "primevue/column"
 import ToggleSwitch from "primevue/toggleswitch"
 import SelectButton from "primevue/selectbutton"
+import ProgressSpinner from "primevue/progressspinner"
 
 import { useRoute, useRouter } from "vue-router"
 
-import {
-  getPlayers,
-  getTeams,
-  getGames,
-  aggregateGamesOnPlayer,
-  filterDataByPlayerNames,
-  calculatePointsForTeams,
-} from "../data"
+import { getPlayers, getTeams } from "../data"
 
 const $route = useRoute()
 const $router = useRouter()
 
 const props = defineProps(["source"])
 
+const loading = ref(true)
 const tab = ref($route.query.tab)
 const playerData = ref([])
 const teamData = ref([])
@@ -65,20 +61,11 @@ watch(tab, (tab) => {
 })
 
 onBeforeMount(async () => {
-  const players = await getPlayers(props.source)
-  const games = await getGames()
-  const aggregated = aggregateGamesOnPlayer(games)
-  const playerNames = players.map((player) => player.player)
-  const aggregatedPlayerData = filterDataByPlayerNames(aggregated, playerNames)
-  aggregatedPlayerData.sort((a, b) => b.points - a.points)
-  playerData.value = aggregatedPlayerData
-
-  const teams = await getTeams(props.source)
-  const summed = calculatePointsForTeams(teams, aggregatedPlayerData)
-  summed.sort((a, b) => b.points - a.points)
-  teamData.value = summed
+  playerData.value = await getPlayers(props.source)
+  teamData.value = await getTeams(props.source)
 
   chooseData(tab.value)
+  loading.value = false
 })
 </script>
 
@@ -161,8 +148,13 @@ const TEAM_COLUMNS = [
     default: true,
   },
   {
-    field: "points",
+    field: "currentPoints",
     header: "Points",
+    default: true,
+  },
+  {
+    field: "points",
+    header: "Total",
     default: true,
   },
 ]
@@ -174,8 +166,8 @@ const PLAYER_COLUMNS = [
     default: true,
   },
   {
-    field: "minutes_played",
-    header: "Minutes",
+    field: "games",
+    header: "Games",
     default: true,
   },
   {
@@ -204,13 +196,13 @@ const PLAYER_COLUMNS = [
     default: false,
   },
   {
-    field: "motm_votes",
-    header: "Votes",
+    field: "minutes_played",
+    header: "Minutes",
     default: false,
   },
   {
-    field: "clean_sheet",
-    header: "Clean Sheets",
+    field: "motm_votes",
+    header: "Votes",
     default: false,
   },
   {
@@ -229,13 +221,23 @@ const PLAYER_COLUMNS = [
     default: false,
   },
   {
+    field: "clean_sheet",
+    header: "Clean Sheets",
+    default: false,
+  },
+  {
     field: "penalty_save",
     header: "Penalty Saves",
     default: false,
   },
   {
-    field: "points",
+    field: "currentPoints",
     header: "Points",
+    default: true,
+  },
+  {
+    field: "points",
+    header: "Total",
     default: true,
   },
 ]

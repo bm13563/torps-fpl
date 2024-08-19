@@ -11,5 +11,7 @@
 body {
   font-family: "Roboto", sans-serif;
   margin: 0;
+  background-color: #2D3250;
+  color: white;
 }
 </style>
