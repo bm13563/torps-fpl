@@ -1,12 +1,13 @@
 <template>
   <div class="container">
+    <h1 class="title">Torpedo AFC Fantasy Football League</h1>
     <SelectButton v-model="tab" :options="TABS" :allowEmpty="false" class="title" />
     <div v-if="isPlayers" class="show-extended">
       <p>Show all player data</p>
       <ToggleSwitch v-model="showExtended" />
     </div>
     <ProgressSpinner v-if="loading" />
-    <DataTable v-else :value="tableData">
+    <DataTable v-else :value="tableData" scrollable>
       <Column
         v-for="column in tableColumns.filter((c) => showExtended || c.default)"
         :key="column.field"
@@ -28,7 +29,7 @@ import ProgressSpinner from "primevue/progressspinner"
 
 import { useRoute, useRouter } from "vue-router"
 
-import { getPlayers, getTeams } from "../data"
+import { getPlayers, getTeams, getLastUpdated } from "../data"
 
 const $route = useRoute()
 const $router = useRouter()
@@ -39,6 +40,7 @@ const loading = ref(true)
 const tab = ref($route.query.tab)
 const playerData = ref([])
 const teamData = ref([])
+const lastUpdated = ref()
 const tableData = ref([])
 const tableColumns = ref([])
 const showExtended = ref(false)
@@ -63,6 +65,7 @@ watch(tab, (tab) => {
 onBeforeMount(async () => {
   playerData.value = await getPlayers(props.source)
   teamData.value = await getTeams(props.source)
+  lastUpdated.value = await getLastUpdated()
 
   chooseData(tab.value)
   loading.value = false
@@ -82,7 +85,9 @@ onBeforeMount(async () => {
 }
 
 .title {
+  margin-top: 0;
   margin-bottom: 1rem;
+  text-align: center;
 }
 
 ::v-deep .p-selectbutton * {
@@ -99,9 +104,13 @@ onBeforeMount(async () => {
   align-items: center;
   margin-bottom: 1rem;
 
-  @media (max-width: 768px) {
+  /* @media (max-width: 768px) {
     display: None;
-  }
+  } */
+}
+
+::v-deep .p-datatable {
+  max-width: 90vw;
 }
 
 ::v-deep .p-datatable-table {
@@ -133,8 +142,8 @@ onBeforeMount(async () => {
 ::v-deep .p-datatable thead th,
 ::v-deep .p-datatable tbody td,
 ::v-deep .p-datatable tfoot td {
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 </style>
 

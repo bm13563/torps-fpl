@@ -92,9 +92,9 @@ const buildCachedDataFromSource = (source) => {
   const summedTeams = calculatePointsForTeams(teams, aggregatedPlayers)
   summedTeams.sort((a, b) => b.points - a.points)
 
-  
-  fs.writeFileSync(getPath(`public/${source}_render_players.json`), JSON.stringify(aggregatedPlayers));
-  fs.writeFileSync(getPath(`public/${source}_render_teams.json`), JSON.stringify(summedTeams));
+  fs.writeFileSync(getPath(`public/${source}_render_players.json`), JSON.stringify(aggregatedPlayers))
+  fs.writeFileSync(getPath(`public/${source}_render_teams.json`), JSON.stringify(summedTeams))
+  fs.writeFileSync(getPath(`public/last_updated.json`), JSON.stringify({ lastUpdated: new Date().toISOString() }))
 
   console.log("built date for", source)
 }

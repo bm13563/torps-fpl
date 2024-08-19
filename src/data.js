@@ -1,5 +1,3 @@
-import Papa from "papaparse";
-
 const getData = (path) => {
   path = import.meta.env.VITE_FILE_ROOT + path;
   return new Promise((resolve, reject) => {
@@ -27,3 +25,7 @@ export const getPlayers = (source) => {
 export const getTeams = (source) => {
   return getData(`${source}_render_teams.json`);
 };
+
+export const getLastUpdated = () => {
+  return getData("last_updated.json")
+}
