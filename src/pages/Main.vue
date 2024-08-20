@@ -1,10 +1,13 @@
 <template>
   <div class="container">
-    <h1 class="title">Torpedo AFC Fantasy Football League</h1>
+    <h1 class="title">Torps Fantasy Football League</h1>
     <SelectButton v-model="tab" :options="TABS" :allowEmpty="false" class="title" />
-    <div v-if="isPlayers" class="show-extended">
-      <p>Show all player data</p>
-      <ToggleSwitch v-model="showExtended" />
+    <div class="actions">
+      <Select v-model="source" :options="SOURCES" :allowEmpty="false" />
+      <div v-if="isPlayers" class="show-extended">
+        <p>Show all player data</p>
+        <ToggleSwitch v-model="showExtended" />
+      </div>
     </div>
     <ProgressSpinner v-if="loading" />
     <DataTable v-else :value="tableData" scrollable>
@@ -13,6 +16,7 @@
         :key="column.field"
         :field="column.field"
         :header="column.header"
+        :sortable="showExtended && isPlayers"
       ></Column>
     </DataTable>
   </div>
@@ -26,6 +30,7 @@ import Column from "primevue/column"
 import ToggleSwitch from "primevue/toggleswitch"
 import SelectButton from "primevue/selectbutton"
 import ProgressSpinner from "primevue/progressspinner"
+import Select from "primevue/select"
 
 import { useRoute, useRouter } from "vue-router"
 
@@ -49,8 +54,15 @@ const showExtended = ref(false)
 
 const isPlayers = computed(() => tab.value === "Players")
 
-const chooseData = (tab) => {
-  if (tab === "Players") {
+const getData = async (newSource) => {
+  playerData.value = await getPlayers(newSource.toLowerCase())
+  teamData.value = await getTeams(newSource.toLowerCase())
+  teamData.value = teamData.value.map((team, index) => ({ ...team, rank: index + 1 }))
+  lastUpdated.value = await getLastUpdated()
+}
+
+const chooseData = (newTab) => {
+  if (newTab === "Players") {
     tableData.value = playerData.value
     tableColumns.value = PLAYER_COLUMNS
   } else {
@@ -64,14 +76,18 @@ watch(tab, (tab) => {
   $router.push({ query: { tab, source: source.value } })
 })
 
-onBeforeMount(async () => {
-  playerData.value = await getPlayers(source.value)
-  teamData.value = await getTeams(source.value)
-  lastUpdated.value = await getLastUpdated()
-
-  chooseData(tab.value)
+watch(source, (source) => {
+  loading.value = true
+  getData(source)
+  $router.push({ query: { tab: tab.value, source } })
   loading.value = false
+})
+
+onBeforeMount(async () => {
+  await getData(source.value)
+  chooseData(tab.value)
   $router.push({ query: { tab: tab.value, source: source.value } })
+  loading.value = false
 })
 </script>
 
@@ -79,47 +95,47 @@ onBeforeMount(async () => {
 .container {
   display: flex;
   flex-direction: column;
-  padding: 1rem 10rem;
+  padding: 1rem 0;
   align-items: center;
-
-  @media (max-width: 768px) {
-    padding: 1rem;
-  }
 }
 
 .title {
   margin-top: 0;
   margin-bottom: 1rem;
   text-align: center;
+  font-size: 24px;
 }
 
-::v-deep .p-selectbutton * {
-  font-size: 24px;
+.actions {
+  display: flex;
+  width: 100%;
+  height: 2.5rem;
+  margin-bottom: 1rem;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+  font-size: 12px;
+}
 
-  @media (max-width: 768px) {
-    font-size: 16px;
-  }
+::v-deep .p-select-label {
+  padding: 0.25rem;
+  padding-left: 0.5rem;
 }
 
 .show-extended {
   display: flex;
   gap: 1rem;
   align-items: center;
-  margin-bottom: 1rem;
-
-  /* @media (max-width: 768px) {
-    display: None;
-  } */
 }
 
 ::v-deep .p-datatable {
-  max-width: 90vw;
+  width: 90vw;
 }
 
 ::v-deep .p-datatable-table {
   font-family: "Roboto", sans-serif;
   font-size: 18px;
-  width: initial;
+  width: 100%;
 
   @media (max-width: 768px) {
     font-size: 12px;
@@ -147,15 +163,33 @@ onBeforeMount(async () => {
 ::v-deep .p-datatable tfoot td {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
+  max-width: 10rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    max-width: 5rem;
+  }
 }
 </style>
 
 <script>
 const TABS = ["Players", "Teams"]
 
-const SOURCES = ["firsts", "club"]
+const SOURCES = ["Firsts", "Club"]
 
 const TEAM_COLUMNS = [
+  {
+      field: "rank",
+      header: "Rank",
+      default: true,
+    },
+  {
+    field: "name",
+    header: "Team Name",
+    default: true,
+  },
   {
     field: "owner",
     header: "Owner",

@@ -38,6 +38,7 @@ const calculatePointsForTeams = (teams, players) => {
   const keys = Object.keys(teams[0]).filter((key) => key !== "owner")
   teams.forEach((team) => {
     points.push({
+      name: team.name,
       owner: team.owner,
       points: keys.reduce((acc, key) => {
         const points = players.find((player) => player.player === team[key])?.points || 0
@@ -100,3 +101,4 @@ const buildCachedDataFromSource = (source) => {
 }
 
 buildCachedDataFromSource("firsts")
+buildCachedDataFromSource("club")

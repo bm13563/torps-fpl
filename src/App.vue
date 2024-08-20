@@ -14,4 +14,9 @@ body {
   background-color: #2D3250;
   color: white;
 }
+
+#app {
+  display: flex;
+  justify-content: center;
+}
 </style>
