@@ -71,15 +71,17 @@ const chooseData = (newTab) => {
   }
 }
 
-watch(tab, (tab) => {
-  chooseData(tab)
-  $router.push({ query: { tab, source: source.value } })
+watch(tab, (newTab) => {
+  chooseData(newTab)
+  $router.push({ query: { tab: newTab, source: source.value } })
 })
 
-watch(source, (source) => {
+watch(source, async (newSource) => {
+  console.log(newSource)
   loading.value = true
-  getData(source)
-  $router.push({ query: { tab: tab.value, source } })
+  await getData(newSource)
+  chooseData(tab.value)
+  $router.push({ query: { tab: tab.value, source: newSource } })
   loading.value = false
 })
 
