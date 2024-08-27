@@ -1,8 +1,5 @@
 <template>
-  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css" />
-  <div id="app">
     <router-view />
-  </div>
 </template>
 
 <script setup></script>
@@ -11,8 +8,28 @@
 body {
   font-family: "Roboto", sans-serif;
   margin: 0;
-  background-color: #2D3250;
-  color: white;
+  background-color: #fffefd;
+  height: 100vh;
+
+  @media (min-width: 768px) {
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+  
+    ::-webkit-scrollbar-track {
+      background: var(--lightestgrey); 
+    }
+  
+    ::-webkit-scrollbar-thumb {
+      background: #e0e0e0; 
+      border-radius: 5px;
+    }
+  
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555; 
+    }
+  }
 }
 
 #app {

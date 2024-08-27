@@ -1,7 +1,13 @@
 <template>
   <div class="container">
-    <h1 class="title">Torps Fantasy Football League</h1>
-    <SelectButton v-model="tab" :options="TABS" :allowEmpty="false" class="title" />
+    <div class="title">
+      <img src="../assets/torps_logo.png" alt="logo" />
+      <span class="text">
+      <h1 >Torps Fantasy League</h1>
+      <p>Last updated: {{ dateFormat(lastUpdated, "yyyy-mm-dd HH:MM") }}</p>
+    </span>
+    </div>
+    <SelectButton v-model="tab" :options="TABS" :allowEmpty="false" class="selector" />
     <div class="actions">
       <Select v-model="source" :options="SOURCES" :allowEmpty="false" />
       <div v-if="isPlayers" class="show-extended">
@@ -9,14 +15,15 @@
         <ToggleSwitch v-model="showExtended" />
       </div>
     </div>
-    <ProgressSpinner v-if="loading" />
-    <DataTable v-else :value="tableData" scrollable>
+    <ProgressSpinner id="spinner" v-if="loading" />
+    <DataTable v-else :value="tableData" scrollable :scroll-height="tableHeight">
       <Column
         v-for="column in tableColumns.filter((c) => showExtended || c.default)"
         :key="column.field"
         :field="column.field"
         :header="column.header"
         :sortable="showExtended && isPlayers"
+        :frozen="column.field === 'player'"
       ></Column>
     </DataTable>
   </div>
@@ -31,6 +38,7 @@ import ToggleSwitch from "primevue/toggleswitch"
 import SelectButton from "primevue/selectbutton"
 import ProgressSpinner from "primevue/progressspinner"
 import Select from "primevue/select"
+import dateFormat from "dateformat"
 
 import { useRoute, useRouter } from "vue-router"
 
@@ -50,15 +58,22 @@ const lastUpdated = ref()
 const tableData = ref([])
 
 const tableColumns = ref([])
-const showExtended = ref(false)
+const showExtended = ref(window.innerHeight > 768)
 
 const isPlayers = computed(() => tab.value === "Players")
+const visibleColumnsLength = computed(() => tableColumns.value.filter((c) => (showExtended.value ? true : c.default)))
+const tableHeight = computed(() => {
+  const bottomOfActions = document.querySelector(".actions").getBoundingClientRect().bottom
+  const bottomOfPage = window.innerHeight
+  return bottomOfPage - bottomOfActions - 32 + "px"
+})
 
 const getData = async (newSource) => {
   playerData.value = await getPlayers(newSource.toLowerCase())
   teamData.value = await getTeams(newSource.toLowerCase())
   teamData.value = teamData.value.map((team, index) => ({ ...team, rank: index + 1 }))
-  lastUpdated.value = await getLastUpdated()
+  const lastUpdatedUnformatted = await getLastUpdated()
+  lastUpdated.value = new Date(lastUpdatedUnformatted.lastUpdated)
 }
 
 const chooseData = (newTab) => {
@@ -69,15 +84,17 @@ const chooseData = (newTab) => {
     tableData.value = teamData.value
     tableColumns.value = TEAM_COLUMNS
   }
+  tableHeight.value
 }
 
 watch(tab, (newTab) => {
+  loading.value = true
   chooseData(newTab)
   $router.push({ query: { tab: newTab, source: source.value } })
+  loading.value = false
 })
 
 watch(source, async (newSource) => {
-  console.log(newSource)
   loading.value = true
   await getData(newSource)
   chooseData(tab.value)
@@ -94,18 +111,47 @@ onBeforeMount(async () => {
 </script>
 
 <style scoped>
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.title img {
+  margin-right: 1rem;
+  height: 60px;
+  width: 60px;
+}
+
+.title h1 {
+  margin-bottom: 0;
+  margin-top: 0;
+  font-size: 24px;
+}
+
+.title p {
+  margin: 0;
+  margin-top: 0.25rem;
+  margin-left: 0.25rem;
+  font-size: 12px;
+}
+
 .container {
   display: flex;
   flex-direction: column;
-  padding: 1rem 0;
+  padding-top: 1rem;
   align-items: center;
 }
 
-.title {
+.selector {
   margin-top: 0;
   margin-bottom: 1rem;
   text-align: center;
   font-size: 24px;
+  display: flex;
+  align-items: center;
 }
 
 .actions {
@@ -116,7 +162,10 @@ onBeforeMount(async () => {
   align-items: center;
   justify-content: flex-start;
   gap: 1rem;
-  font-size: 12px;
+
+  @media (max-width: 768px) {
+    font-size: 12px;
+  }
 }
 
 ::v-deep .p-select-label {
@@ -131,7 +180,12 @@ onBeforeMount(async () => {
 }
 
 ::v-deep .p-datatable {
-  width: 90vw;
+  width: v-bind(visibleColumnsLength * 10 + 10 + "rem");
+  max-width: 90vw;
+
+  @media (max-width: 768px) {
+    width: 90vw;
+  }
 }
 
 ::v-deep .p-datatable-table {
@@ -160,11 +214,15 @@ onBeforeMount(async () => {
   border-radius: 0 0 0.5rem 0 !important;
 }
 
+::v-deep .p-datatable thead th {
+  font-size: 12px;
+}
+
 ::v-deep .p-datatable thead th,
 ::v-deep .p-datatable tbody td,
 ::v-deep .p-datatable tfoot td {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
   max-width: 10rem;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -172,6 +230,8 @@ onBeforeMount(async () => {
 
   @media (max-width: 768px) {
     max-width: 5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 }
 </style>
@@ -183,10 +243,10 @@ const SOURCES = ["Firsts", "Club"]
 
 const TEAM_COLUMNS = [
   {
-      field: "rank",
-      header: "Rank",
-      default: true,
-    },
+    field: "rank",
+    header: "Rank",
+    default: true,
+  },
   {
     field: "name",
     header: "Team Name",
