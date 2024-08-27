@@ -13,6 +13,7 @@
   "dependencies": {
     "@primevue/themes": "^4.0.4",
     "dateformat": "^5.0.3",
+    "papaparse": "^5.4.1",
     "primevue": "^4.0.4",
     "vue": "^3.4.37",
     "vue-router": "^4.4.3"
