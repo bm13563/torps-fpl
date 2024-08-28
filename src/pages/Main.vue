@@ -239,7 +239,7 @@ onBeforeMount(async () => {
 <script>
 const TABS = ["Players", "Teams"]
 
-const SOURCES = ["Firsts", "Club"]
+const SOURCES = ["Club", "Firsts"]
 
 const TEAM_COLUMNS = [
   {
@@ -274,6 +274,11 @@ const PLAYER_COLUMNS = [
     field: "player",
     header: "Player",
     default: true,
+  },
+  {
+    field: "position",
+    header: "Position",
+    default: false,
   },
   {
     field: "games",

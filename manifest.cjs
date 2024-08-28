@@ -2,6 +2,26 @@ const fs = require("fs")
 const path = require("path")
 const papaparse = require("papaparse")
 
+const BASE = {
+  "games": 0,
+  "wins": 0,
+  "losses": 0,
+  "draws": 0,
+  "points": 0,
+  "currentPoints": 0,
+  "minutes_played": 0,
+  "motm_votes": 0,
+  "goals": 0,
+  "assists": 0,
+  "clean_sheet": 0,
+  "yellow_card": 0,
+  "red_card": 0,
+  "own_goal": 0,
+  "penalty_save": 0,
+  "result": "-",
+  "points": 0
+}
+
 const aggregateGamesOnPlayer = (games) => {
   const aggregated = {}
   games.forEach((game) => {
@@ -33,9 +53,11 @@ const aggregateGamesOnPlayer = (games) => {
   })
 }
 
-const calculatePointsForTeams = (teams, players) => {
+// uses the team data to calculate the points for each team
+// owner + 11 players + captain (so player is counted twice, points automatically doubled)
+const calculatePointsForTeamsClub = (teams, players) => {
   const points = []
-  const keys = Object.keys(teams[0]).filter((key) => key !== "owner")
+  const keys = Object.keys(teams[0])
   teams.forEach((team) => {
     points.push({
       name: team.name,
@@ -53,8 +75,17 @@ const calculatePointsForTeams = (teams, players) => {
   return points
 }
 
-const filterDataByPlayerNames = (data, playerNames) => {
-  return data.filter((player) => playerNames.includes(player.player))
+const filterGameDataByPlayers = (gameData, players) => {
+  const collected = []
+  players.forEach((player) => {
+    const found = gameData.find((game) => game.player === player.player)
+    if (found) {
+      collected.push({ ...found, position: player.position })
+    } else {
+      collected.push({ ...BASE, player: player.player, position: player.position })
+    }
+  })
+  return collected
 }
 
 const getPath = (relativePath) => {
@@ -74,6 +105,10 @@ const buildCachedDataFromSource = (source) => {
 
   const games = []
   gameFiles.forEach((file) => {
+    if (!file.includes(".csv")) {
+      return
+    }
+
     const gamesCsv = fs.readFileSync(path.join(getPath("data/games"), file), "utf8")
     const gamesParsed = papaparse.parse(gamesCsv, { header: true })
     const gamesAugmented = gamesParsed.data.map((game) => {
@@ -86,12 +121,22 @@ const buildCachedDataFromSource = (source) => {
   })
 
   const aggregatedGames = aggregateGamesOnPlayer(games)
-  const playerNames = players.map((player) => player.player)
-  const aggregatedPlayers = filterDataByPlayerNames(aggregatedGames, playerNames)
+  const aggregatedPlayers = filterGameDataByPlayers(aggregatedGames, players)
   aggregatedPlayers.sort((a, b) => b.points - a.points)
+  aggregatedPlayers.sort((a, b) => {
+    if (a.points === b.points) {
+      return a.player.localeCompare(b.player)
+    }
+    return b.points - a.points
+  })
 
-  const summedTeams = calculatePointsForTeams(teams, aggregatedPlayers)
-  summedTeams.sort((a, b) => b.points - a.points)
+  const summedTeams = calculatePointsForTeamsClub(teams, aggregatedPlayers)
+  summedTeams.sort((a, b) => {
+    if (a.points === b.points) {
+      return a.owner.localeCompare(b.owner)
+    }
+    return b.points - a.points
+  })
 
   fs.writeFileSync(getPath(`public/${source}_render_players.json`), JSON.stringify(aggregatedPlayers))
   fs.writeFileSync(getPath(`public/${source}_render_teams.json`), JSON.stringify(summedTeams))
