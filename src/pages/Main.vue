@@ -64,7 +64,7 @@ const isPlayers = computed(() => tab.value === "Players")
 const visibleColumnsLength = computed(() => tableColumns.value.filter((c) => (showExtended.value ? true : c.default)))
 const tableHeight = computed(() => {
   const bottomOfActions = document.querySelector(".actions").getBoundingClientRect().bottom
-  const bottomOfPage = window.innerHeight
+  const bottomOfPage = window.visualViewport.height
   return bottomOfPage - bottomOfActions - 32 + "px"
 })
 
