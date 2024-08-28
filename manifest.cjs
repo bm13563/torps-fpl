@@ -75,6 +75,27 @@ const calculatePointsForTeamsClub = (teams, players) => {
   return points
 }
 
+// same as above but don't include owner
+const calculatePointsForTeamsFirsts = (teams, players) => {
+  const points = []
+  const keys = Object.keys(teams[0]).filter((key) => key !== "owner")
+  teams.forEach((team) => {
+    points.push({
+      name: team.name,
+      owner: team.owner,
+      points: keys.reduce((acc, key) => {
+        const points = players.find((player) => player.player === team[key])?.points || 0
+        return acc + points
+      }, 0),
+      currentPoints: keys.reduce((acc, key) => {
+        const currentPoints = players.find((player) => player.player === team[key])?.currentPoints || 0
+        return acc + currentPoints
+      }, 0),
+    })
+  })
+  return points
+}
+
 const filterGameDataByPlayers = (gameData, players) => {
   const collected = []
   players.forEach((player) => {
@@ -92,7 +113,7 @@ const getPath = (relativePath) => {
   return path.join(__dirname, relativePath)
 }
 
-const buildCachedDataFromSource = (source) => {
+const buildCachedDataFromSource = (source, pointsFn) => {
   const playersCsv = fs.readFileSync(getPath(`data/${source}/players.csv`), "utf8")
   const playersParsed = papaparse.parse(playersCsv, { header: true })
   const players = playersParsed.data
@@ -130,7 +151,7 @@ const buildCachedDataFromSource = (source) => {
     return b.points - a.points
   })
 
-  const summedTeams = calculatePointsForTeamsClub(teams, aggregatedPlayers)
+  const summedTeams = pointsFn(teams, aggregatedPlayers)
   summedTeams.sort((a, b) => {
     if (a.points === b.points) {
       return a.owner.localeCompare(b.owner)
@@ -145,5 +166,5 @@ const buildCachedDataFromSource = (source) => {
   console.log("built date for", source)
 }
 
-buildCachedDataFromSource("firsts")
-buildCachedDataFromSource("club")
+buildCachedDataFromSource("firsts", calculatePointsForTeamsFirsts)
+buildCachedDataFromSource("club", calculatePointsForTeamsClub)
