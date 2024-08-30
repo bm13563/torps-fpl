@@ -3,23 +3,23 @@ const path = require("path")
 const papaparse = require("papaparse")
 
 const BASE = {
-  "games": 0,
-  "wins": 0,
-  "losses": 0,
-  "draws": 0,
-  "points": 0,
-  "currentPoints": 0,
-  "minutes_played": 0,
-  "motm_votes": 0,
-  "goals": 0,
-  "assists": 0,
-  "clean_sheet": 0,
-  "yellow_card": 0,
-  "red_card": 0,
-  "own_goal": 0,
-  "penalty_save": 0,
-  "result": "-",
-  "points": 0
+  games: 0,
+  wins: 0,
+  losses: 0,
+  draws: 0,
+  points: 0,
+  currentPoints: 0,
+  minutes_played: 0,
+  motm_votes: 0,
+  goals: 0,
+  assists: 0,
+  clean_sheet: 0,
+  yellow_card: 0,
+  red_card: 0,
+  own_goal: 0,
+  penalty_save: 0,
+  result: "-",
+  points: 0,
 }
 
 const aggregateGamesOnPlayer = (games) => {
@@ -163,7 +163,7 @@ const buildCachedDataFromSource = (source, pointsFn) => {
   fs.writeFileSync(getPath(`public/${source}_render_teams.json`), JSON.stringify(summedTeams))
   fs.writeFileSync(getPath(`public/last_updated.json`), JSON.stringify({ lastUpdated: new Date().toISOString() }))
 
-  console.log("built date for", source)
+  console.log("built data for", source)
 }
 
 buildCachedDataFromSource("firsts", calculatePointsForTeamsFirsts)

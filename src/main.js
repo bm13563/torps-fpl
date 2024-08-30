@@ -8,6 +8,7 @@ import router from "./router"
 
 const MyPreset = definePreset(Aura, {
   semantic: {
+    transitionDuration: "0.05s",
     primary: {
       50: "{orange.50}",
       100: "{orange.100}",
@@ -52,7 +53,7 @@ app.use(PrimeVue, {
   theme: {
     preset: MyPreset,
     options: {
-        darkModeSelector: '.fake-dark-selector',
-    }
+      darkModeSelector: ".fake-dark-selector",
+    },
   },
 })

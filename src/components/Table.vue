@@ -1,6 +1,6 @@
 <template>
   <div :class="{ hidden: !display }">
-    <DataTable :value="data" scrollable :scroll-height="tableHeight">
+    <DataTable v-once :value="data" scrollable :scroll-height="tableHeight">
       <Column
         v-for="column in columns"
         :key="column.field"
@@ -8,7 +8,7 @@
         :header="column.header"
         :frozen="column.field === 'player'"
         :sortable="sortable"
-      ></Column>
+      />
     </DataTable>
   </div>
 </template>

@@ -1,5 +1,5 @@
 <template>
-    <router-view />
+  <router-view />
 </template>
 
 <script setup></script>
@@ -16,18 +16,18 @@ body {
       width: 5px;
       height: 5px;
     }
-  
+
     ::-webkit-scrollbar-track {
-      background: var(--lightestgrey); 
+      background: var(--lightestgrey);
     }
-  
+
     ::-webkit-scrollbar-thumb {
-      background: #e0e0e0; 
+      background: #e0e0e0;
       border-radius: 5px;
     }
-  
+
     ::-webkit-scrollbar-thumb:hover {
-      background: #555; 
+      background: #555;
     }
   }
 }

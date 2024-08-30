@@ -19,6 +19,7 @@
     <template v-else>
       <!-- hilarious but primevue tables are so slow that it's better not to unmount them -->
       <Table
+        v-if="(isFirsts && isPlayers && isExtended) || backgroundMount"
         :data="firstsPlayers"
         :columns="PLAYER_COLUMNS"
         :tableHeight="tableHeight"
@@ -26,6 +27,7 @@
         :sortable="true"
       />
       <Table
+        v-if="(isFirsts && isPlayers && !isExtended) || backgroundMount"
         :data="firstsPlayers"
         :columns="PLAYER_COLUMNS.filter((column) => column.default)"
         :tableHeight="tableHeight"
@@ -33,6 +35,7 @@
         :sortable="false"
       />
       <Table
+        v-if="(!isFirsts && isPlayers && isExtended) || backgroundMount"
         :data="clubPlayers"
         :columns="PLAYER_COLUMNS"
         :tableHeight="tableHeight"
@@ -40,6 +43,7 @@
         :sortable="true"
       />
       <Table
+        v-if="(!isFirsts && isPlayers && !isExtended) || backgroundMount"
         :data="clubPlayers"
         :columns="PLAYER_COLUMNS.filter((column) => column.default)"
         :tableHeight="tableHeight"
@@ -47,6 +51,7 @@
         :sortable="false"
       />
       <Table
+        v-if="(isFirsts && !isPlayers) || backgroundMount"
         :data="firstsTeams"
         :columns="TEAM_COLUMNS"
         :tableHeight="tableHeight"
@@ -54,6 +59,7 @@
         :sortable="false"
       />
       <Table
+        v-if="(!isFirsts && !isPlayers) || backgroundMount"
         :data="clubTeams"
         :columns="TEAM_COLUMNS"
         :tableHeight="tableHeight"
@@ -95,6 +101,7 @@ const loading = ref(true)
 const tab = ref($route.query.tab || TABS[0])
 const source = ref($route.query.source || SOURCES[0])
 const isExtended = ref(window.innerHeight > 768)
+const backgroundMount = ref(false)
 
 const isFirsts = computed(() => source.value === "Firsts")
 const isPlayers = computed(() => tab.value === "Players")
@@ -106,20 +113,14 @@ const getTableHeight = () => {
 }
 
 watch(tab, (newTab) => {
-  loading.value = true
   $router.push({ query: { tab: newTab, source: source.value } })
-  loading.value = false
 })
 
-watch(source, async (newSource) => {
-  loading.value = true
+watch(source, (newSource) => {
   $router.push({ query: { tab: tab.value, source: newSource } })
-  loading.value = false
 })
 
 onMounted(async () => {
-  loading.value = true
-
   tableHeight = getTableHeight()
 
   firstsPlayers = await getPlayers("firsts")
@@ -135,6 +136,10 @@ onMounted(async () => {
   lastUpdated = new Date(lastUpdated.lastUpdated)
 
   $router.push({ query: { tab: tab.value, source: source.value } })
+
+  setTimeout(() => {
+    backgroundMount.value = true
+  }, 1)
 
   loading.value = false
 })
