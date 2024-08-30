@@ -4,18 +4,24 @@
       <img src="../assets/torps_logo.png" alt="logo" />
       <span class="text">
         <h1>Torps Fantasy League</h1>
-        <p>Last updated: {{ dateFormat(lastUpdated, "yyyy-mm-dd HH:MM") }}</p>
+        <p>Last updated: {{ lastUpdated ? dateFormat(lastUpdated, "yyyy-mm-dd HH:MM") : "" }}</p>
       </span>
     </div>
-    <SelectButton v-model="tab" :options="TABS" :allowEmpty="false" class="selector" />
+    <SelectButton v-model="tab" :options="TABS" :allowEmpty="false" class="selector" :disabled="!ready" />
     <div class="actions">
-      <Select v-model="source" :options="SOURCES" :allowEmpty="false" />
+      <Select v-model="source" :options="SOURCES" :allowEmpty="false" :disabled="!ready" />
       <div v-if="isPlayers" class="show-extended">
         <p>Show all player data</p>
-        <ToggleSwitch v-model="isExtended" />
+        <ToggleSwitch v-model="isExtended" :disabled="!ready" />
       </div>
     </div>
-    <ProgressSpinner id="spinner" v-if="loading" />
+    <ProgressSpinner
+      v-if="loading"
+      style="width: 50px; height: 50px"
+      strokeWidth="4"
+      fill="transparent"
+      animationDuration=".5s"
+    />
     <template v-else>
       <!-- hilarious but primevue tables are so slow that it's better not to unmount them -->
       <Table
@@ -29,7 +35,7 @@
       <Table
         v-if="(isFirsts && isPlayers && !isExtended) || backgroundMount"
         :data="firstsPlayers"
-        :columns="PLAYER_COLUMNS.filter((column) => column.default)"
+        :columns="DEFAULT_PLAYER_COLUMNS"
         :tableHeight="tableHeight"
         :display="isFirsts && isPlayers && !isExtended"
         :sortable="false"
@@ -45,7 +51,7 @@
       <Table
         v-if="(!isFirsts && isPlayers && !isExtended) || backgroundMount"
         :data="clubPlayers"
-        :columns="PLAYER_COLUMNS.filter((column) => column.default)"
+        :columns="DEFAULT_PLAYER_COLUMNS"
         :tableHeight="tableHeight"
         :display="!isFirsts && isPlayers && !isExtended"
         :sortable="false"
@@ -71,7 +77,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from "vue"
+import { ref, watch, computed, nextTick } from "vue"
 
 import ToggleSwitch from "primevue/toggleswitch"
 import SelectButton from "primevue/selectbutton"
@@ -98,10 +104,12 @@ let tableHeight
 
 // reactive
 const loading = ref(true)
+const backgroundMount = ref(false)
+const ready = ref(false)
+
 const tab = ref($route.query.tab || TABS[0])
 const source = ref($route.query.source || SOURCES[0])
 const isExtended = ref(window.innerHeight > 768)
-const backgroundMount = ref(false)
 
 const isFirsts = computed(() => source.value === "Firsts")
 const isPlayers = computed(() => tab.value === "Players")
@@ -139,6 +147,9 @@ onMounted(async () => {
 
   setTimeout(() => {
     backgroundMount.value = true
+    nextTick(() => {
+      ready.value = true
+    })
   }, 1)
 
   loading.value = false
@@ -201,6 +212,14 @@ onMounted(async () => {
   @media (max-width: 768px) {
     font-size: 12px;
   }
+}
+
+::v-deep .p-disabled.p-select {
+  border-color: var(--p-select-disabled-background);
+}
+
+::v-deep .p-disabled .p-select-dropdown-icon {
+  color: var(--p-select-disabled-color);
 }
 
 ::v-deep .p-select-label {
@@ -335,4 +354,6 @@ const PLAYER_COLUMNS = [
     default: true,
   },
 ]
+
+const DEFAULT_PLAYER_COLUMNS = PLAYER_COLUMNS.filter((column) => column.default)
 </script>

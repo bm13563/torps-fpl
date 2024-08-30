@@ -11,6 +11,8 @@ body {
   background-color: #fffefd;
   height: 100vh;
 
+  --p-text-color: #000;
+
   @media (min-width: 768px) {
     ::-webkit-scrollbar {
       width: 5px;

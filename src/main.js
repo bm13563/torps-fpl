@@ -33,10 +33,17 @@ const MyPreset = definePreset(Aura, {
           400: "{orange.400}",
           500: "{orange.500}",
           600: "{orange.600}",
-          700: "#000",
+          700: "{orange.700}",
           800: "{orange.800}",
           900: "{orange.900}",
           950: "{orange.950}",
+        },
+        formField: {
+          disabledBackground: "#f5f5f5",
+          disabledColor: "#b3b3b3",
+        },
+        text: {
+          color: "#000",
         },
       },
     },
