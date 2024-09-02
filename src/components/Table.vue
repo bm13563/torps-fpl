@@ -2,7 +2,6 @@
   <div :class="{ hidden: !display }">
     <DataTable v-once :value="data" scrollable :scroll-height="tableHeight">
       <Column
-        v-once
         v-for="column in columns"
         :key="column.field"
         :field="column.field"
