@@ -1,6 +1,6 @@
 <template>
   <div :class="{ hidden: !display }">
-    <DataTable :value="data" scrollable :scroll-height="tableHeight">
+    <DataTable v-once :value="data" scrollable :scroll-height="tableHeight">
       <Column
         v-once
         v-for="column in columns"
@@ -19,7 +19,6 @@ import Column from "primevue/column"
 import DataTable from "primevue/datatable"
 
 const props = defineProps(["data", "columns", "tableHeight", "display", "sortable"])
-
 </script>
 
 <style scoped>

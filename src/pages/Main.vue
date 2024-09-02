@@ -145,12 +145,13 @@ onMounted(async () => {
 
   $router.push({ query: { tab: tab.value, source: source.value } })
 
+  backgroundMount.value = true
+  setTimeout(() => {
     backgroundMount.value = true
-    setTimeout(() => {
-      nextTick(() => {
-        ready.value = true
-      })
-    }, 100)
+    nextTick(() => {
+      ready.value = true
+    })
+  }, 100)
 
   loading.value = false
 })
