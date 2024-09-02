@@ -1,6 +1,6 @@
 <template>
   <div :class="{ hidden: !display }">
-    <DataTable :value="data" scrollable :scroll-height="tableHeight" :virtualScrollerOptions="{ itemSize: 20, appendOnly: true}">
+    <DataTable :value="data" scrollable :scroll-height="tableHeight">
       <Column
         v-once
         v-for="column in columns"
@@ -24,10 +24,7 @@ const props = defineProps(["data", "columns", "tableHeight", "display", "sortabl
 
 <style scoped>
 .hidden {
-  visibility: hidden;
-  width: 0px;
-  height: 0px;
-  /* display: none; */
+  display: none;
 }
 
 ::v-deep .p-datatable {
