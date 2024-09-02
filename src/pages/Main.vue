@@ -105,7 +105,7 @@ let tableHeight
 // reactive
 const loading = ref(true)
 const backgroundMount = ref(false)
-const ready = ref(false)
+const ready = ref(true)
 
 const tab = ref($route.query.tab || TABS[0])
 const source = ref($route.query.source || SOURCES[0])
@@ -145,12 +145,12 @@ onMounted(async () => {
 
   $router.push({ query: { tab: tab.value, source: source.value } })
 
-  setTimeout(() => {
     backgroundMount.value = true
-    nextTick(() => {
-      ready.value = true
-    })
-  }, 1)
+  // setTimeout(() => {
+  //   nextTick(() => {
+  //     ready.value = true
+  //   })
+  // }, 100)
 
   loading.value = false
 })
