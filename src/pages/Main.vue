@@ -7,12 +7,12 @@
         <p>Last updated: {{ lastUpdated ? dateFormat(lastUpdated, "yyyy-mm-dd HH:MM") : "" }}</p>
       </span>
     </div>
-    <SelectButton v-model="tab" :options="TABS" :allowEmpty="false" class="selector" :disabled="!ready" />
+    <SelectButton v-model="tab" :options="TABS" :allowEmpty="false" class="selector"/>
     <div class="actions">
-      <Select v-model="source" :options="SOURCES" :allowEmpty="false" :disabled="!ready" />
+      <Select v-model="source" :options="SOURCES" :allowEmpty="false"/>
       <div v-if="isPlayers" class="show-extended">
         <p>Show all player data</p>
-        <ToggleSwitch v-model="isExtended" :disabled="!ready" />
+        <ToggleSwitch v-model="isExtended"/>
       </div>
     </div>
     <ProgressSpinner
@@ -23,9 +23,9 @@
       animationDuration=".5s"
     />
     <template v-else>
-      <!-- hilarious but primevue tables are so slow that it's better not to unmount them -->
+      <!-- data is static so dont unmount once rendered -->
       <Table
-        v-if="(isFirsts && isPlayers && isExtended) || backgroundMount"
+        v-if="shouldMount(isFirsts && isPlayers && isExtended, 'firstsPlayersExtended')"
         :data="firstsPlayers"
         :columns="PLAYER_COLUMNS"
         :tableHeight="tableHeight"
@@ -33,7 +33,7 @@
         :sortable="true"
       />
       <Table
-        v-if="(isFirsts && isPlayers && !isExtended) || backgroundMount"
+        v-if="shouldMount(isFirsts && isPlayers && !isExtended, 'firstsPlayersDefault')"
         :data="firstsPlayers"
         :columns="DEFAULT_PLAYER_COLUMNS"
         :tableHeight="tableHeight"
@@ -41,7 +41,7 @@
         :sortable="false"
       />
       <Table
-        v-if="(!isFirsts && isPlayers && isExtended) || backgroundMount"
+        v-if="shouldMount(!isFirsts && isPlayers && isExtended, 'clubPlayersExtended')"
         :data="clubPlayers"
         :columns="PLAYER_COLUMNS"
         :tableHeight="tableHeight"
@@ -49,7 +49,7 @@
         :sortable="true"
       />
       <Table
-        v-if="(!isFirsts && isPlayers && !isExtended) || backgroundMount"
+        v-if="shouldMount(!isFirsts && isPlayers && !isExtended, 'clubPlayersDefault')"
         :data="clubPlayers"
         :columns="DEFAULT_PLAYER_COLUMNS"
         :tableHeight="tableHeight"
@@ -57,7 +57,7 @@
         :sortable="false"
       />
       <Table
-        v-if="(isFirsts && !isPlayers) || backgroundMount"
+        v-if="shouldMount(isFirsts && !isPlayers, 'firstsTeams')"
         :data="firstsTeams"
         :columns="TEAM_COLUMNS"
         :tableHeight="tableHeight"
@@ -65,7 +65,7 @@
         :sortable="false"
       />
       <Table
-        v-if="(!isFirsts && !isPlayers) || backgroundMount"
+        v-if="shouldMount(!isFirsts && !isPlayers, 'clubTeams')"
         :data="clubTeams"
         :columns="TEAM_COLUMNS"
         :tableHeight="tableHeight"
@@ -101,11 +101,10 @@ let firstsTeams
 let clubTeams
 let lastUpdated
 let tableHeight
+let mounted = []
 
 // reactive
 const loading = ref(true)
-const backgroundMount = ref(false)
-const ready = ref(false)
 
 const tab = ref($route.query.tab || TABS[0])
 const source = ref($route.query.source || SOURCES[0])
@@ -117,7 +116,17 @@ const isPlayers = computed(() => tab.value === "Players")
 const getTableHeight = () => {
   const bottomOfActions = document.querySelector(".actions").getBoundingClientRect().bottom
   const bottomOfPage = window.visualViewport.height
-  return bottomOfPage - bottomOfActions - 32 + "px"
+  return bottomOfPage - bottomOfActions - 32
+}
+
+const shouldMount = (condition, identifier) => {
+  if (condition || mounted.includes(identifier)) {
+    if (!mounted.includes(identifier)) {
+      mounted.push(identifier)
+    }
+    return true
+  }
+  return false
 }
 
 watch(tab, (newTab) => {
@@ -144,13 +153,6 @@ onMounted(async () => {
   lastUpdated = new Date(lastUpdated.lastUpdated)
 
   $router.push({ query: { tab: tab.value, source: source.value } })
-
-  setTimeout(() => {
-    backgroundMount.value = true
-    nextTick(() => {
-      ready.value = true
-    })
-  }, 100)
 
   loading.value = false
 })

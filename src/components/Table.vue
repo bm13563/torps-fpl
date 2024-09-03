@@ -1,6 +1,6 @@
 <template>
   <div :class="{ hidden: !display }">
-    <DataTable v-once :value="data" scrollable :scroll-height="tableHeight">
+    <DataTable v-once :value="data" scrollable :scrollHeight="`${props.tableHeight}px`" :virtual-scroller-options="{ itemSize: 39, appendOnly: true }">
       <Column
         v-for="column in columns"
         :key="column.field"
@@ -33,10 +33,15 @@ const props = defineProps(["data", "columns", "tableHeight", "display", "sortabl
   }
 }
 
+::v-deep .p-virtualscroller {
+  contain: content;
+}
+
 ::v-deep .p-datatable-table {
   font-family: "Roboto", sans-serif;
   font-size: 18px;
   width: 100%;
+  border-color: var(--p-surface-200)!important;
 
   @media (max-width: 768px) {
     font-size: 12px;
@@ -72,6 +77,7 @@ const props = defineProps(["data", "columns", "tableHeight", "display", "sortabl
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  border-color: var(--p-surface-200)!important;
 
   @media (max-width: 768px) {
     max-width: 5rem;
