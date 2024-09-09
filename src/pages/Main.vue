@@ -258,12 +258,12 @@ const TEAM_COLUMNS = [
     default: true,
   },
   {
-    field: "points",
+    field: "Total Points",
     header: "Points",
     default: true,
   },
   {
-    field: "points",
+    field: "Total Points",
     header: "Total",
     default: true,
   },
@@ -346,12 +346,12 @@ const PLAYER_COLUMNS = [
     default: false,
   },
   {
-    field: "Points",
+    field: "GW Points",
     header: "Points",
     default: true,
   },
   {
-    field: "Total",
+    field: "Points",
     header: "Total",
     default: true,
   },

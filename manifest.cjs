@@ -2,8 +2,8 @@ const fs = require("fs")
 const path = require("path")
 const papaparse = require("papaparse")
 
-const BASE = {
-  "Total": 0, 
+const PLAYERS_BASE = {
+  "Points": 0, 
   "Minutes Played": 0, 
   "MOTM Votes": 0, 
   "Goals": 0, 
@@ -16,7 +16,15 @@ const BASE = {
   "Wins": 0, 
   "Draws": 0, 
   "Losses": 0, 
+  "GW Points": 0,
+}
+
+const TEAMS_BASE = {
+  "rank": "",
+  "name": "",
+  "owner": "",
   "Points": 0,
+  "Total Points": 0,
 }
 
 const getPath = (relativePath) => {
@@ -34,17 +42,17 @@ const buildPlayerDataFromSource = (source) => {
   playersParsed.data.forEach((player) => {
     const found = snapshotParsed.data.find((snap) => snap.Player === player.player)
     if (found) {
-      data.push({ ...player, ...BASE, ...found, games: parseInt(found.Wins) + parseInt(found.Losses) + parseInt(found.Draws) })
+      data.push({ ...player, ...PLAYERS_BASE, ...found, games: parseInt(found.Wins) + parseInt(found.Losses) + parseInt(found.Draws) })
     } else {
-      data.push({ ...player, ...BASE })
+      data.push({ ...player, ...PLAYERS_BASE })
     }
   })
 
   data.sort((a, b) => {
-    if (a.Total === b.Total) {
-      return a.player.localeCompare(b.player)
+    if (a['Points'] === b['Points']) {
+      return a.Player.localeCompare(b.Player)
     }
-    return b.Total - a.Total
+    return b['Points'] - a['Points']
   })
 
   fs.writeFileSync(getPath(`public/${source}_render_players.json`), JSON.stringify(data))
@@ -59,19 +67,19 @@ const buildTeamDataFromSource = (source) => {
 
   const data = []
   teamsParsed.data.forEach((team) => {
-    const found = snapshotParsed.data.find((snap) => snap.owner === team.owner)
+    const found = snapshotParsed.data.find((snap) => snap['Team Owner'] === team.owner)
     if (found) {
       data.push({ ...team, ...found })
     } else {
-      data.push({ ...team, ...BASE })
+      data.push({ ...team, ...TEAMS_BASE })
     }
   })
 
   data.sort((a, b) => {
-    if (a.points === b.points) {
-      return a.owner.localeCompare(b.owner)
+    if (a['Total Points'] === b['Total Points']) {
+      return a.owner.localeCompare(b['Team Owner'])
     }
-    return b.points - a.points
+    return b['Total Points'] - a['Total Points']
   })
 
   data.forEach((team, index) => {
