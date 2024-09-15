@@ -258,7 +258,7 @@ const TEAM_COLUMNS = [
     default: true,
   },
   {
-    field: "Total Points",
+    field: "GW Points",
     header: "Points",
     default: true,
   },
