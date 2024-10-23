@@ -41,6 +41,7 @@ const buildPlayerDataFromSource = (source) => {
   const data = []
   playersParsed.data.forEach((player) => {
     const found = snapshotParsed.data.find((snap) => snap.Player === player.player)
+    console.log(found)
     if (found) {
       data.push({ ...player, ...PLAYERS_BASE, ...found, games: parseInt(found.Wins) + parseInt(found.Losses) + parseInt(found.Draws) })
     } else {
