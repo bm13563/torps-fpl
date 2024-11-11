@@ -1,47 +1,113 @@
-Team Name,Team Owner,Total Points,GW Points
-Just about Managing,Alex Hill,556,47
-Wilbinho,Ben Magnin,501,49
-Taking the Hobbits to Odegaard,Alex Cook,407,30
-It's the Sardines,Theo Faull,484,34
-Something Funny FC,Danny Jones,521,52
-Alex's Wh*res,Alex Law,576,38
-The Cluntinators,Clinton Smith,450,51
-Tumblin Dice,Charlotte Dunleavy,450,34
-Boylogna,Daniel Boyle,478,22
-360 No Pope,James Hassall,423,14
-TEderson United,Josh Forster,531,67
-Someone FC,Jack Daniel,490,50
-FC Availability,Jon Howman,536,44
-Dat Guy Willz,Will Brown,419,39
-I Konate Believe It,Jack Presley,455,14
-Haven't Jota Kalou,Tom Dickson,474,15
-Dead Simple,Jack Perry,457,14
-Bingo The Rooket,Bingo,511,29
-Charge!!!,Scott Longdon,512,44
-Will Brown,Chris Hodnett,524,26
-Gavincenzo,Gavin Smith,500,19
-Backstreet's Back FC,Mike Latchford,509,21
-Jame's Delicious Boys,James Bean,414,46
-Jamie's Giants,Jamie Phillips,539,68
-Crusty FC,Jonny Burton,344,17
-Torpedo Titans,Ian Blackburn,470,14
-UpTheDouble,Fraser Wills,499,55
-AFC Get Rid,Nat Corbett,486,23
-2Goals1Cup,Mike Speakman,432,14
-Hill's Calves Haalandly Work,Chiara Marci,518,52
-At the double,Geraint Jones,542,60
-Wilbinho Firsts,Tim Longden,517,48
-Game of throw ins,Matthew Davenport,527,53
-Paris Saint Berman,Alex Berman,563,50
-Chairman Maognin,Rob Leighton,493,17
-Bilbao Baggins,Billy McGregor,574,46
-Fallon d'Or,Alex Fallon,554,59
-Real Snowciedad,Zander Snow,592,44
-Talented Torps,Rob Weaving,414,23
-Obi 1 Kenobi 0,Chris Hazell,322,46
-,Tom Newman,388,34
-Lionel Magnin,James Wilby,430,6
-Can'tThinkOfaName,Ryan Moon,553,29
-Bootleg Torps,Philip Smith,486,44
-All Brownhill from here,Liam Broughton,530,37
-Goal Diggers,Tom Callaway,550,26
+Player,Points,Minutes Played,MOTM Votes,Goals,Assists,Clean Sheet,Yellow Cards,Red Cards,Own Goals,Penalty Saves,Wins,Draws,Losses,GW Points
+Mike Latchford,34,450,5,0,0,1,0,0,0,0,1,1,3,3
+Tom Dickson,11,270,0,0,0,0,1,0,0,0,1,0,2,0
+Jack Lomax,21,255,3,0,0,1,1,0,0,0,1,0,2,0
+Alex Browning,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Ian Blackburn,16,400,1,0,0,0,0,0,0,0,1,0,4,1
+Josh James,30,255,2,0,1,1,0,0,0,0,1,1,1,0
+Joel Lomax,6,135,1,0,0,0,0,0,0,0,0,1,1,0
+Jimmy Taylor,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Zander Snow,33,420,0,0,1,1,0,0,0,0,2,1,2,0
+Rob Leighton,49,450,8,0,2,1,0,0,0,0,2,1,2,0
+Jack Perry,37,360,5,0,1,1,0,0,0,0,2,1,1,0
+James Wilby,28,270,1,1,0,1,0,0,0,0,2,1,1,0
+Oliver Booth,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Reece Evans,16,90,5,0,0,1,0,0,0,0,1,0,0,0
+Alex Hill,3,20,0,0,0,0,0,0,0,0,0,1,0,0
+Tom Callaway,37,360,1,4,0,1,0,0,0,0,2,1,2,0
+James Bean,33,405,2,0,2,1,0,0,0,0,2,1,2,0
+Ash Phillips,1,60,0,0,0,0,0,0,0,0,0,0,1,0
+Alex Cook,17,120,2,1,1,0,0,0,0,0,1,0,1,0
+Ben Taylor,19,370,8,0,0,0,0,0,0,0,0,0,5,0
+Alex Fallon,13,225,1,0,0,0,1,0,0,0,2,0,1,0
+Jamie Sott-Green,5,90,0,0,0,0,0,0,0,0,0,1,0,0
+Leon Coles,19,285,5,0,0,0,0,0,0,0,1,1,2,6
+Mike Breslaw,21,260,2,0,1,0,0,0,0,0,2,0,2,1
+Liam Broughton,22,235,1,0,1,0,0,0,0,0,2,0,1,0
+Tim Longden,25,315,2,0,1,0,0,0,0,0,2,0,2,1
+Jack Somervell,4,90,1,0,0,0,0,0,0,0,0,0,1,0
+Jon Howman,17,270,2,0,0,0,0,0,0,0,1,1,1,0
+Danny Jones,18,225,4,0,0,0,0,0,0,0,2,0,1,2
+Jamie Phillips,43,505,5,2,0,0,0,0,0,0,3,1,3,1
+Ryan Moon,20,340,2,0,0,0,0,0,0,0,2,0,2,3
+Chris Hodnett,68,620,12,3,1,0,0,0,0,0,3,0,4,13
+Alex Law,36,230,8,1,2,0,0,0,0,0,1,0,2,20
+Ben Magnin,50,465,7,1,2,0,0,0,0,0,3,0,3,0
+Alex Berman,55,510,9,4,1,1,1,0,0,0,3,1,3,3
+Paul Woods,34,415,2,3,0,0,0,0,0,0,2,0,3,5
+Greg Morris,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Ollie Searle,23,270,2,0,0,0,0,0,0,0,3,0,0,0
+James Hassall,5,90,2,0,0,0,0,0,0,0,0,0,1,5
+Will Soady,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Adam Young,45,420,10,1,1,0,0,0,0,0,2,1,2,0
+Huw Escott,36,570,3,0,1,0,0,0,0,0,2,1,4,4
+Fraser Wills,36,600,5,0,1,0,0,0,0,0,1,1,5,4
+Gavin Smith,35,540,7,0,0,0,0,0,0,0,2,1,3,0
+Mark Hogan,16,300,2,0,0,0,0,0,0,0,1,0,3,0
+Joseph Gompels,59,345,13,2,3,0,0,0,0,0,2,0,3,8
+Josh Forster,21,310,7,0,1,0,1,0,0,0,0,1,3,0
+Tom Newman,17,285,5,0,0,0,0,0,0,0,1,1,2,0
+Geraint Jones,34,380,4,2,0,0,1,0,0,0,2,1,2,8
+Jack Presley,51,495,5,0,4,0,0,0,0,0,2,1,4,9
+Jack Daniel,33,490,11,0,0,0,0,0,0,0,2,0,4,1
+Billy McGregor,41,370,8,1,3,0,0,0,0,0,2,0,3,2
+Scott Longdon,28,185,1,3,1,0,0,0,0,0,2,0,1,6
+Charlie Perrett,55,470,12,5,0,0,0,0,0,0,2,1,3,1
+Matt Chapman,22,240,0,2,1,0,0,0,0,0,1,0,2,0
+Clinton Smith,9,270,0,0,0,0,0,0,0,0,0,0,3,0
+Liam Gleadall,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Dan Newman-Sanders,7,90,6,0,0,0,1,0,0,0,0,0,1,0
+Rich Brady,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Matteo Peronaci,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Jonny Burton,13,270,1,0,0,0,0,0,0,0,1,0,3,5
+Will Brown,8,170,3,0,0,0,0,0,0,0,0,0,2,0
+Nat Corbett,30,385,7,0,0,0,0,0,0,0,3,0,2,6
+Adam Carpenter,4,180,0,0,0,0,1,0,0,0,0,0,2,0
+Peter Joslin,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Dave Manning,17,225,6,0,0,0,0,0,0,0,1,0,2,11
+Sam Whitcome,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Chris Hazell,18,310,4,0,0,0,0,0,0,0,1,0,3,7
+Theo Faull,12,225,1,0,0,0,0,0,0,0,1,0,2,5
+Joseph Galley,16,240,3,0,0,0,1,0,0,0,2,0,1,5
+Billy Stringer,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Jack Perrett,8,235,1,0,0,0,0,0,0,0,0,0,4,0
+Philip Smith,15,165,6,0,0,0,0,0,0,0,1,0,2,0
+Andrew Williams,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+John Sanderson,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Luke Broadhead,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Suleiman Roble,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Barnes Stringer,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Hector Andrieux,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Daniel Boyle,16,210,1,1,0,0,0,0,0,0,1,0,2,12
+Sam Payne,1,65,0,0,0,0,0,0,0,0,0,0,1,0
+Matthew Davenport,22,345,1,2,0,0,0,0,0,0,1,0,4,0
+Zoltan Hamzuk,8,90,1,0,1,0,0,0,0,0,0,0,1,0
+Kevin McCarron,29,415,1,2,1,0,0,0,0,0,1,0,4,0
+Nathan Searle,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+James Worman,7,125,0,0,0,0,0,0,0,0,1,0,1,5
+Simon Wilson,47,490,13,2,0,0,0,0,0,0,2,0,4,8
+Dan Holden,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Ethan Hayes,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Pete Mooney,19,375,1,0,1,0,0,0,0,0,0,1,4,1
+Ben Perreira,1,45,0,0,0,0,0,0,0,0,0,0,1,0
+Seun Alayande,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Chryst N'Semi,20,360,2,0,1,0,0,0,0,0,0,0,4,0
+Michael Speaks,3,90,0,0,0,0,0,0,0,0,0,0,1,0
+Regan Kelly,14,165,1,1,0,0,0,0,0,0,1,0,1,0
+Jack Chatfield,18,120,2,0,3,0,0,0,0,0,0,1,1,6
+Matt Law,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Rob Weaving,43,455,13,1,3,0,1,0,0,0,1,0,5,2
+Ivan Ramirez,10,140,1,1,0,0,0,0,0,0,0,0,2,0
+George Noonan,5,90,2,0,0,0,0,0,0,0,0,0,1,0
+Matthew Wood,6,90,0,0,0,0,0,0,0,0,1,0,1,5
+Josh Banges,5,55,0,0,0,0,0,0,0,0,1,0,0,0
+Oliver Lord,2,75,0,0,0,0,0,0,0,0,0,0,1,0
+James Lucas,3,90,0,0,0,0,0,0,0,0,0,0,1,0
+Charlie Day,7,180,1,0,0,0,0,0,0,0,0,0,2,4
+Luke De Pass,3,90,0,0,0,0,0,0,0,0,0,0,1,0
+Oliver Lenthall,4,120,2,0,0,0,0,0,0,0,0,0,2,2
+Jamie Sperring,13,270,0,0,0,0,0,0,0,0,1,0,2,3
+Dylan Binding,13,90,0,0,1,0,0,0,0,0,1,0,0,13
+Ben Elsom,5,90,2,0,0,0,0,0,0,0,0,0,1,5
+Luke Parry,6,45,1,0,0,0,0,0,0,0,1,0,0,6
+Jay Weatherson,10,90,3,0,0,0,0,0,0,0,1,0,0,10
