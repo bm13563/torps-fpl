@@ -27,21 +27,30 @@ const TEAMS_BASE = {
   "Total Points": 0,
 }
 
+const transpose = (a) => {
+  return Object.keys(a[0]).map(function(c) {
+      return a.map(function(r) { return r[c]; });
+  });
+}
+
 const getPath = (relativePath) => {
   return path.join(__dirname, relativePath)
 }
 
 const buildPlayerDataFromSource = (source) => {
   const playersCsv = fs.readFileSync(getPath(`data/${source}/players.csv`), "utf8")
-  const playersParsed = papaparse.parse(playersCsv, { header: true })
+  const playersParsed = papaparse.parse(playersCsv, { header: true, delimiter: "," })
 
   const snapshot = fs.readFileSync(getPath(`data/${source}/player_scores.csv`), "utf8")
-  const snapshotParsed = papaparse.parse(snapshot, { header: true })
+  const snapshotParsed = papaparse.parse(snapshot, { header: false, delimiter: "	" })
+
+  const transposed = transpose(snapshotParsed.data)
+  const headers = transposed.shift();
+  const res = transposed.map(row => row.reduce((acc, col, ind) => {acc[headers[ind]] = col; return acc}, {}))
 
   const data = []
   playersParsed.data.forEach((player) => {
-    const found = snapshotParsed.data.find((snap) => snap.Player === player.player)
-    console.log(found)
+    const found = res.find((snap) => snap.Player === player.player)
     if (found) {
       data.push({ ...player, ...PLAYERS_BASE, ...found, games: parseInt(found.Wins) + parseInt(found.Losses) + parseInt(found.Draws) })
     } else {
@@ -61,10 +70,10 @@ const buildPlayerDataFromSource = (source) => {
 
 const buildTeamDataFromSource = (source) => {
   const teamsCsv = fs.readFileSync(getPath(`data/${source}/teams.csv`), "utf8")
-  const teamsParsed = papaparse.parse(teamsCsv, { header: true })
+  const teamsParsed = papaparse.parse(teamsCsv, { header: true, delimiter: "," })
 
   const snapshot = fs.readFileSync(getPath(`data/${source}/team_scores.csv`), "utf8")
-  const snapshotParsed = papaparse.parse(snapshot, { header: true })
+  const snapshotParsed = papaparse.parse(snapshot, { header: true, delimiter: "	" })
 
   const data = []
   teamsParsed.data.forEach((team) => {
