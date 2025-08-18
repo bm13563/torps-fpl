@@ -1,16 +1,21 @@
-import { createRouter, createWebHistory } from "vue-router"
+import { createRouter, createWebHashHistory } from "vue-router"
 
 import Main from "./pages/Main.vue"
+import TeamPicker from "./pages/TeamPicker.vue"
 
 const routes = [
   {
     path: "/",
     component: Main,
   },
+  {
+    path: "/team-picker",
+    component: TeamPicker,
+  },
 ]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.VITE_FILE_ROOT),
+  history: createWebHashHistory(),
   routes,
 })
 

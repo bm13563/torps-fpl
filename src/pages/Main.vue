@@ -47,6 +47,13 @@
       >
         <h3>Entries Open!</h3>
         <p>Please submit your teams for the 25/26 season.</p>
+        <Button 
+          v-if="season === '25/26'"
+          label="Build Team" 
+          icon="pi pi-users"
+          @click="goToTeamPicker"
+          class="team-picker-btn"
+        />
       </div>
       <Table
         v-if="shouldMount(!isPlayers && (!hasEmptyTeams || season !== '25/26'), 'teams')"
@@ -69,6 +76,7 @@ import ProgressSpinner from "primevue/progressspinner"
 import Select from "primevue/select"
 import dateFormat from "dateformat"
 import Table from "../components/Table.vue"
+import Button from "primevue/button"
 
 import { useRoute, useRouter } from "vue-router"
 
@@ -112,6 +120,10 @@ const shouldMount = (condition, identifier) => {
     return true
   }
   return false
+}
+
+const goToTeamPicker = () => {
+  $router.push('/team-picker')
 }
 
 const loadData = async () => {
@@ -220,6 +232,10 @@ onMounted(async () => {
   display: flex;
   gap: 1rem;
   align-items: center;
+}
+
+.team-picker-btn {
+  margin-left: auto; /* Push button to the right */
 }
 
 .coming-soon {
