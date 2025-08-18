@@ -9,7 +9,7 @@
     </div>
     <SelectButton v-model="tab" :options="TABS" :allowEmpty="false" class="selector"/>
     <div class="actions">
-      <Select v-model="source" :options="SOURCES" :allowEmpty="false"/>
+      <Select v-model="season" :options="SEASONS" :allowEmpty="false"/>
       <div v-if="isPlayers" class="show-extended">
         <p>Show all player data</p>
         <ToggleSwitch v-model="isExtended"/>
@@ -25,51 +25,35 @@
     <template v-else>
       <!-- data is static so dont unmount once rendered -->
       <Table
-        v-if="shouldMount(isFirsts && isPlayers && isExtended, 'firstsPlayersExtended')"
-        :data="firstsPlayers"
+        v-if="shouldMount(isPlayers && isExtended, 'playersExtended')"
+        :data="players"
         :columns="PLAYER_COLUMNS"
         :tableHeight="tableHeight"
-        :display="isFirsts && isPlayers && isExtended"
+        :display="isPlayers && isExtended"
         :sortable="true"
       />
       <Table
-        v-if="shouldMount(isFirsts && isPlayers && !isExtended, 'firstsPlayersDefault')"
-        :data="firstsPlayers"
+        v-if="shouldMount(isPlayers && !isExtended, 'playersDefault')"
+        :data="players"
         :columns="DEFAULT_PLAYER_COLUMNS"
         :tableHeight="tableHeight"
-        :display="isFirsts && isPlayers && !isExtended"
+        :display="isPlayers && !isExtended"
         :sortable="false"
       />
+      <div
+        v-if="!isPlayers && hasEmptyTeams && season === '25/26'"
+        class="coming-soon"
+        :style="{ height: tableHeight + 'px' }"
+      >
+        <h3>Entries Open!</h3>
+        <p>Please submit your teams for the 25/26 season.</p>
+      </div>
       <Table
-        v-if="shouldMount(!isFirsts && isPlayers && isExtended, 'clubPlayersExtended')"
-        :data="clubPlayers"
-        :columns="PLAYER_COLUMNS"
-        :tableHeight="tableHeight"
-        :display="!isFirsts && isPlayers && isExtended"
-        :sortable="true"
-      />
-      <Table
-        v-if="shouldMount(!isFirsts && isPlayers && !isExtended, 'clubPlayersDefault')"
-        :data="clubPlayers"
-        :columns="DEFAULT_PLAYER_COLUMNS"
-        :tableHeight="tableHeight"
-        :display="!isFirsts && isPlayers && !isExtended"
-        :sortable="false"
-      />
-      <Table
-        v-if="shouldMount(isFirsts && !isPlayers, 'firstsTeams')"
-        :data="firstsTeams"
+        v-if="shouldMount(!isPlayers && (!hasEmptyTeams || season !== '25/26'), 'teams')"
+        :data="teams"
         :columns="TEAM_COLUMNS"
         :tableHeight="tableHeight"
-        :display="isFirsts && !isPlayers"
-        :sortable="false"
-      />
-      <Table
-        v-if="shouldMount(!isFirsts && !isPlayers, 'clubTeams')"
-        :data="clubTeams"
-        :columns="TEAM_COLUMNS"
-        :tableHeight="tableHeight"
-        :display="!isFirsts && !isPlayers"
+        :display="!isPlayers && (!hasEmptyTeams || season !== '25/26')"
         :sortable="false"
       />
     </template>
@@ -95,10 +79,8 @@ const $route = useRoute()
 const $router = useRouter()
 
 // constants
-let firstsPlayers
-let clubPlayers
-let firstsTeams
-let clubTeams
+let players
+let teams
 let lastUpdated
 let tableHeight
 let mounted = []
@@ -107,11 +89,14 @@ let mounted = []
 const loading = ref(true)
 
 const tab = ref($route.query.tab || TABS[0])
-const source = ref($route.query.source || SOURCES[0])
+const season = ref($route.query.season || SEASONS[0])
 const isExtended = ref(window.innerHeight > 768)
 
-const isFirsts = computed(() => source.value === "Firsts")
 const isPlayers = computed(() => tab.value === "Players")
+
+const hasEmptyTeams = computed(() => {
+  return !teams || teams.length === 0 || teams.every(team => !team.name || !team.owner)
+})
 
 const getTableHeight = () => {
   const bottomOfActions = document.querySelector(".actions").getBoundingClientRect().bottom
@@ -129,32 +114,34 @@ const shouldMount = (condition, identifier) => {
   return false
 }
 
+const loadData = async () => {
+  loading.value = true
+  
+  players = await getPlayers(season.value)
+  teams = await getTeams(season.value)
+  teams = teams.map((team, index) => ({ ...team, rank: index + 1 }))
+  
+  loading.value = false
+}
+
 watch(tab, (newTab) => {
-  $router.push({ query: { tab: newTab, source: source.value } })
+  $router.push({ query: { tab: newTab, season: season.value } })
 })
 
-watch(source, (newSource) => {
-  $router.push({ query: { tab: tab.value, source: newSource } })
+watch(season, async (newSeason) => {
+  $router.push({ query: { tab: tab.value, season: newSeason } })
+  await loadData()
 })
 
 onMounted(async () => {
   tableHeight = getTableHeight()
 
-  firstsPlayers = await getPlayers("firsts")
-  clubPlayers = await getPlayers("club")
-
-  firstsTeams = await getTeams("firsts")
-  firstsTeams = firstsTeams.map((team, index) => ({ ...team, rank: index + 1 }))
-
-  clubTeams = await getTeams("club")
-  clubTeams = clubTeams.map((team, index) => ({ ...team, rank: index + 1 }))
+  await loadData()
 
   lastUpdated = await getLastUpdated()
   lastUpdated = new Date(lastUpdated.lastUpdated)
 
-  $router.push({ query: { tab: tab.value, source: source.value } })
-
-  loading.value = false
+  $router.push({ query: { tab: tab.value, season: season.value } })
 })
 </script>
 
@@ -234,12 +221,57 @@ onMounted(async () => {
   gap: 1rem;
   align-items: center;
 }
+
+.coming-soon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--p-content-background);
+  border: 1px solid var(--p-surface-200);
+  border-radius: 0.5rem;
+  color: var(--p-text-color);
+  padding: 2rem;
+  margin: 0;
+  max-width: 90vw;
+  width: 100%;
+  box-sizing: border-box;
+  
+  @media (max-width: 768px) {
+    width: 90vw;
+    padding: 1.5rem 1rem;
+  }
+}
+
+.coming-soon h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  color: var(--p-text-color);
+  text-align: center;
+  
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+    margin: 0 0 0.75rem 0;
+  }
+}
+
+.coming-soon p {
+  margin: 0;
+  color: var(--p-text-muted-color);
+  text-align: center;
+  font-size: 1rem;
+  line-height: 1.5;
+  
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+  }
+}
 </style>
 
 <script>
 const TABS = ["Players", "Teams"]
 
-const SOURCES = ["Club", "Firsts"]
+const SEASONS = ["25/26", "24/25"]
 
 const TEAM_COLUMNS = [
   {

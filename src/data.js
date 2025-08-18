@@ -17,12 +17,14 @@ const getData = (path) => {
   })
 }
 
-export const getPlayers = (source) => {
-  return getData(`${source}_render_players.json`)
+export const getPlayers = (season) => {
+  const seasonKey = season.replace("/", "_") // Convert "24/25" to "24_25"
+  return getData(`${seasonKey}_render_players.json`)
 }
 
-export const getTeams = (source) => {
-  return getData(`${source}_render_teams.json`)
+export const getTeams = (season) => {
+  const seasonKey = season.replace("/", "_") // Convert "24/25" to "24_25"
+  return getData(`${seasonKey}_render_teams.json`)
 }
 
 export const getLastUpdated = () => {

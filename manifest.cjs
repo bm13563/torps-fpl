@@ -23,7 +23,7 @@ const TEAMS_BASE = {
   "rank": "",
   "name": "",
   "owner": "",
-  "Points": 0,
+  "GW Points": 0,
   "Total Points": 0,
 }
 
@@ -37,57 +37,85 @@ const getPath = (relativePath) => {
   return path.join(__dirname, relativePath)
 }
 
-const buildPlayerDataFromSource = (source) => {
-  const playersCsv = fs.readFileSync(getPath(`data/${source}/players.csv`), "utf8")
+const buildPlayerDataFromSource = (sourcePath, outputName) => {
+  const playersCsv = fs.readFileSync(getPath(`${sourcePath}/players.csv`), "utf8")
   const playersParsed = papaparse.parse(playersCsv, { header: true, delimiter: "," })
 
-  const snapshot = fs.readFileSync(getPath(`data/${source}/player_scores.csv`), "utf8")
-  const snapshotParsed = papaparse.parse(snapshot, { header: false, delimiter: "	" })
+  let data = []
+  
+  // Check if player_scores.csv exists (for 24/25 season)
+  const scoresPath = getPath(`${sourcePath}/player_scores.csv`)
+  if (fs.existsSync(scoresPath)) {
+    const snapshot = fs.readFileSync(scoresPath, "utf8")
+    const snapshotParsed = papaparse.parse(snapshot, { header: false, delimiter: "	" })
 
-  const transposed = transpose(snapshotParsed.data)
-  const headers = transposed.shift();
-  const res = transposed.map(row => row.reduce((acc, col, ind) => {acc[headers[ind]] = col; return acc}, {}))
+    const transposed = transpose(snapshotParsed.data)
+    const headers = transposed.shift();
+    const res = transposed.map(row => row.reduce((acc, col, ind) => {acc[headers[ind]] = col; return acc}, {}))
 
-  const data = []
-  playersParsed.data.forEach((player) => {
-    const found = res.find((snap) => snap.Player === player.player)
-    if (found) {
-      data.push({ ...player, ...PLAYERS_BASE, ...found, games: parseInt(found.Wins) + parseInt(found.Losses) + parseInt(found.Draws) })
-    } else {
+    playersParsed.data.forEach((player) => {
+      const found = res.find((snap) => snap.Player === player.player)
+      if (found) {
+        data.push({ ...player, ...PLAYERS_BASE, ...found, games: parseInt(found.Wins) + parseInt(found.Losses) + parseInt(found.Draws) })
+      } else {
+        data.push({ ...player, ...PLAYERS_BASE })
+      }
+    })
+  } else {
+    // For 25/26 season - no scores yet, everyone starts at 0
+    playersParsed.data.forEach((player) => {
       data.push({ ...player, ...PLAYERS_BASE })
-    }
-  })
+    })
+  }
 
   data.sort((a, b) => {
     if (a['Points'] === b['Points']) {
-      return a.Player.localeCompare(b.Player)
+      return a.player.localeCompare(b.player)
     }
     return b['Points'] - a['Points']
   })
 
-  fs.writeFileSync(getPath(`public/${source}_render_players.json`), JSON.stringify(data))
+  fs.writeFileSync(getPath(`public/${outputName}_render_players.json`), JSON.stringify(data))
 }
 
-const buildTeamDataFromSource = (source) => {
-  const teamsCsv = fs.readFileSync(getPath(`data/${source}/teams.csv`), "utf8")
+const buildTeamDataFromSource = (sourcePath, outputName) => {
+  const teamsCsv = fs.readFileSync(getPath(`${sourcePath}/teams.csv`), "utf8")
   const teamsParsed = papaparse.parse(teamsCsv, { header: true, delimiter: "," })
 
-  const snapshot = fs.readFileSync(getPath(`data/${source}/team_scores.csv`), "utf8")
-  const snapshotParsed = papaparse.parse(snapshot, { header: true, delimiter: "	" })
+  let data = []
+  
+  // Check if the CSV file is empty or has no valid data
+  if (!teamsParsed.data || teamsParsed.data.length === 0 || 
+      (teamsParsed.data.length === 1 && !teamsParsed.data[0].name)) {
+    // Return empty array for empty teams file
+    fs.writeFileSync(getPath(`public/${outputName}_render_teams.json`), JSON.stringify([]))
+    return
+  }
+  
+  // Check if team_scores.csv exists (for 24/25 season)
+  const scoresPath = getPath(`${sourcePath}/team_scores.csv`)
+  if (fs.existsSync(scoresPath)) {
+    const snapshot = fs.readFileSync(scoresPath, "utf8")
+    const snapshotParsed = papaparse.parse(snapshot, { header: true, delimiter: "	" })
 
-  const data = []
-  teamsParsed.data.forEach((team) => {
-    const found = snapshotParsed.data.find((snap) => snap['Team Owner'] === team.owner)
-    if (found) {
-      data.push({ ...team, ...found })
-    } else {
+    teamsParsed.data.forEach((team) => {
+      const found = snapshotParsed.data.find((snap) => snap['Team Owner'] === team.owner)
+      if (found) {
+        data.push({ ...team, ...found })
+      } else {
+        data.push({ ...team, ...TEAMS_BASE })
+      }
+    })
+  } else {
+    // For 25/26 season - no scores yet, everyone starts at 0
+    teamsParsed.data.forEach((team) => {
       data.push({ ...team, ...TEAMS_BASE })
-    }
-  })
+    })
+  }
 
   data.sort((a, b) => {
     if (a['Total Points'] === b['Total Points']) {
-      return a.owner.localeCompare(b['Team Owner'])
+      return a.owner.localeCompare(b.owner)
     }
     return b['Total Points'] - a['Total Points']
   })
@@ -96,11 +124,15 @@ const buildTeamDataFromSource = (source) => {
     team.rank = index + 1
   })
 
-  fs.writeFileSync(getPath(`public/${source}_render_teams.json`), JSON.stringify(data))
+  fs.writeFileSync(getPath(`public/${outputName}_render_teams.json`), JSON.stringify(data))
 }
 
-buildPlayerDataFromSource("club")
-buildPlayerDataFromSource("firsts")
-buildTeamDataFromSource("club")
-buildTeamDataFromSource("firsts")
+// Generate data for 24/25 season (last season with actual data)
+buildPlayerDataFromSource("data/24_25/club", "24_25")
+buildTeamDataFromSource("data/24_25/club", "24_25")
+
+// Generate data for 25/26 season (current season with zero data)
+buildPlayerDataFromSource("data/24_25/25_26", "25_26")
+buildTeamDataFromSource("data/24_25/25_26", "25_26")
+
 fs.writeFileSync(getPath(`public/last_updated.json`), JSON.stringify({ lastUpdated: new Date().toISOString() }))
