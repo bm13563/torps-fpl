@@ -4,7 +4,7 @@
     <div class="title">
       <img src="../assets/torps_logo.png" alt="logo" />
       <span class="text">
-        <h1>Team Builder - 25/26 Season</h1>
+        <h1>Team Builder</h1>
         <p class="back-link" @click="goBack">
           ⬅️ Back to League
         </p>
@@ -48,44 +48,20 @@ const router = useRouter()
 const activeTabLabel = ref('Rules')
 const players = ref([])
 const selectedTeam = ref({
-  formation: '442',
+  teamName: '',
+  defenders: [],
+  midfielders: [],
+  attackers: [],
   players: [],
   captain: null,
   twelfthMan: null,
-  teamName: ''
+  formation: '4-4-2'
 })
 
-// Team validation rules
+// Simplified validation - now handled in PickerTab
 const teamValidation = computed(() => {
-  const team = selectedTeam.value.players
-  const totalCost = team.reduce((sum, player) => sum + parseFloat(player.price.replace('£', '')), 0)
-  const teamCounts = {}
-  const newPlayerCount = team.filter(p => p.team === 'NEW').length
-  
-  // Count players per team
-  team.forEach(player => {
-    if (player.team !== 'NEW') {
-      teamCounts[player.team] = (teamCounts[player.team] || 0) + 1
-    }
-  })
-  
-  const maxPlayersFromSingleTeam = Math.max(...Object.values(teamCounts), 0)
-  const teamsRepresented = Object.keys(teamCounts).length
-  const hasAllTeams = teamsRepresented >= 4 // Teams 1, 2, 3, 4
-  
   return {
-    validBudget: totalCost <= 100,
-    validPlayerCount: team.length === 11,
-    hasNewPlayer: newPlayerCount >= 1,
-    hasAllTeams: hasAllTeams,
-    maxFromSingleTeam: maxPlayersFromSingleTeam <= 4,
-    hasCaptain: !!selectedTeam.value.captain,
-    hasTwelfthMan: !!selectedTeam.value.twelfthMan,
-    totalCost,
-    isValid: function() {
-      return this.validBudget && this.validPlayerCount && this.hasNewPlayer && 
-             this.hasAllTeams && this.maxFromSingleTeam && this.hasCaptain && this.hasTwelfthMan
-    }
+    isValid: () => true // Validation is now in the child component
   }
 })
 
@@ -95,30 +71,38 @@ const updateTeam = (teamData) => {
 
 const exportTeam = () => {
   const team = selectedTeam.value
-  const formation = team.formation
-  const players = team.players.map(p => `${p.playerName} (${p.position}, ${p.team}, ${p.price})`).join('\n')
+  const formation = team.formation || 'Custom'
+  
+  // Gather all players from the new structure
+  const allPlayers = []
+  if (team.goalkeeper) allPlayers.push(team.goalkeeper)
+  if (team.defenders) allPlayers.push(...team.defenders)
+  if (team.midfielders) allPlayers.push(...team.midfielders)  
+  if (team.attackers) allPlayers.push(...team.attackers)
+  
+  const players = allPlayers.map(p => `${p.playerName} (${p.position}, ${p.team}, ${p.price})`).join('\n')
   const captain = team.captain ? `${team.captain.playerName} (${team.captain.position}, ${team.captain.team})` : 'Not selected'
-  const twelfthMan = team.twelfthMan ? `${team.twelfthMan.playerName} (${team.twelfthMan.position}, ${team.twelfthMan.team})` : 'Not selected'
-  const totalCost = teamValidation.value.totalCost
+  const twelfthMan = team.twelfthMan ? `${team.twelfthMan.playerName}` : 'Not selected'
+  const totalCost = allPlayers.reduce((sum, player) => sum + parseFloat(player.price.replace('£', '')), 0)
   
   const teamText = `TEAM SUBMISSION - ${team.teamName || 'Unnamed Team'}
 
 Formation: ${formation}
-Total Cost: £${totalCost}
+Total Cost: £${totalCost.toFixed(2)}
 
 PLAYERS:
 ${players}
 
 CAPTAIN: ${captain}
 12TH MAN: ${twelfthMan}
-
-Team is ${teamValidation.value.isValid() ? 'VALID' : 'INVALID'}
-${!teamValidation.value.isValid() ? 'Please fix validation errors before submitting.' : ''}
 `
 
   navigator.clipboard.writeText(teamText).then(() => {
-    // Could add a toast notification here
     console.log('Team copied to clipboard!')
+    // Could add a toast notification here
+  }).catch(err => {
+    console.error('Failed to copy team to clipboard:', err)
+    // Fallback: could show the text in a modal or alert
   })
 }
 
@@ -224,6 +208,7 @@ const TAB_OPTIONS = ["Rules", "Player Stats", "Pick Team"]
   flex-direction: column;
   padding-top: 1rem;
   align-items: center;
+  width: 100%;
 }
 
 .selector {

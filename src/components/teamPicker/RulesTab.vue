@@ -23,21 +23,6 @@
       </div>
 
       <div class="rule-card">
-        <h3>Formations</h3>
-        <p>Available formations:</p>
-        <ul>
-          <li>3-5-2</li>
-          <li>3-4-3</li>
-          <li>4-5-1</li>
-          <li>4-4-2</li>
-          <li>4-3-3</li>
-          <li>5-4-1</li>
-          <li>5-3-2</li>
-          <li>5-2-3</li>
-        </ul>
-      </div>
-
-      <div class="rule-card">
         <h3>Prizes</h3>
         <ul>
           <li><strong>1st:</strong> 2/3 of prize pot</li>
@@ -165,6 +150,8 @@
 @media (max-width: 768px) {
   .rules-container {
     padding: 1.5rem;
+    padding-left: 0;
+    padding-right: 0;
   }
   
   .contact-list li {
