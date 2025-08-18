@@ -113,8 +113,16 @@ const goBack = () => {
 // Load player data when page mounts
 onMounted(async () => {
   try {
-    // Load the player picker CSV data
-    const response = await fetch('/data/24_25/25_26/player_picker.csv')
+    // Load the player picker CSV data - using same pattern as JSON files
+    const csvPath = import.meta.env.VITE_FILE_ROOT + 'player_picker.csv'
+    console.log('Loading CSV from:', csvPath)
+    
+    const response = await fetch(csvPath)
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+    }
+    
     const csvText = await response.text()
     
     // Parse CSV (simple implementation)
@@ -141,8 +149,12 @@ onMounted(async () => {
           redCards: values[12] || '0'
         }
       })
+      
+    console.log(`Loaded ${players.value.length} players`)
   } catch (error) {
     console.error('Failed to load player data:', error)
+    console.error('VITE_FILE_ROOT:', import.meta.env.VITE_FILE_ROOT)
+    // Could show user-friendly error message here
   }
 })
 </script>
