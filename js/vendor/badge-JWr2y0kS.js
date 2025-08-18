@@ -1,4 +1,4 @@
-import{B as o,s as c}from"./core-E-lCN-sd.js";import{i as r,a as d}from"./utils-CXbrStuA.js";import{o as s,c as g,r as i,a as b,m as l}from"./runtime-core-Bo7vMbeO.js";import{t as p}from"./shared-7YLTi_yj.js";var u=function(a){var n=a.dt;return`
+import{B as o,s as c}from"./core-BvHsUG4k.js";import{i as r,a as d}from"./utils-DJmc-F4Z.js";import{o as s,c as g,r as i,a as b,m as l}from"./runtime-core-ynBvhIh5.js";import{t as p}from"./shared-7YLTi_yj.js";var u=function(a){var n=a.dt;return`
 .p-badge {
     display: inline-flex;
     border-radius: `.concat(n("badge.border.radius"),`;
