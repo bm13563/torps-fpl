@@ -1,85 +1,66 @@
 <template>
-  <div class="stats-container">
-    <div class="stats-header">
-      <h2>Player Statistics - 24/25 Season</h2>
-      <p>Use these stats to help pick your team for 25/26</p>
-    </div>
-
-    <div class="filters">
-      <div class="filter-group">
-        <label>Filter by Position:</label>
-        <Select 
-          v-model="selectedPosition" 
-          :options="positions" 
-          placeholder="All Positions"
-          :clearable="true"
-        />
-      </div>
-      <div class="filter-group">
-        <label>Filter by Team:</label>
-        <Select 
-          v-model="selectedTeam" 
-          :options="teams" 
-          placeholder="All Teams"
-          :clearable="true"
-        />
-      </div>
-      <div class="filter-group">
-        <label>Sort by:</label>
-        <Select 
-          v-model="sortBy" 
-          :options="sortOptions" 
-          placeholder="Total Points"
-        />
+  <div class="container">
+    <div class="actions">
+      <Select 
+        v-model="selectedPosition" 
+        :options="positions" 
+        :allowEmpty="false"
+      />
+      <Select 
+        v-model="selectedTeam" 
+        :options="teams" 
+        :allowEmpty="false"
+      />
+      <div class="show-extended">
+        <p>Show all player data</p>
+        <ToggleSwitch v-model="isExtended"/>
       </div>
     </div>
 
-    <div class="stats-table-container">
-      <Table 
-        :data="filteredPlayers" 
+    <template v-if="!loading">
+      <Table
+        v-if="shouldMount(isExtended, 'playersExtended')"
+        :key="`extended-${selectedPosition}-${selectedTeam}-${filteredPlayers.length}`"
+        :data="filteredPlayers"
         :columns="PLAYER_COLUMNS"
         :tableHeight="tableHeight"
-        :display="true"
+        :display="isExtended"
         :sortable="true"
       />
-    </div>
-
-    <div class="stats-legend">
-      <h3>Legend</h3>
-      <div class="legend-items">
-        <span class="legend-item">PPG = Points Per Game</span>
-        <span class="legend-item">MOTM = Man of the Match votes</span>
-        <span class="legend-item">CS = Clean Sheets</span>
-        <span class="legend-item">YC = Yellow Cards</span>
-        <span class="legend-item">RC = Red Cards</span>
-        <span class="legend-item">⚠️ = Poor availability in first half</span>
-      </div>
-    </div>
+      <Table
+        v-if="shouldMount(!isExtended, 'playersDefault')"
+        :key="`default-${selectedPosition}-${selectedTeam}-${filteredPlayers.length}`"
+        :data="filteredPlayers"
+        :columns="DEFAULT_PLAYER_COLUMNS"
+        :tableHeight="tableHeight"
+        :display="!isExtended"
+        :sortable="false"
+      />
+    </template>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick, onUnmounted, watch } from 'vue'
 import Table from '../Table.vue'
 import Select from 'primevue/select'
+import ToggleSwitch from 'primevue/toggleswitch'
 
 const props = defineProps(['players'])
 
-const selectedPosition = ref(null)
-const selectedTeam = ref(null)
-const sortBy = ref('totalPoints')
-const tableHeight = ref(500)
+// Fix 1: Use simple arrays like Main.vue for proper "All" display
+const positions = ['All', 'GK', 'DEF', 'MID', 'FOR']
+const teams = ['All', '1', '2', '3', '4', 'New']
 
-const positions = ['GK', 'DEF', 'MID', 'FOR']
-const teams = ['1', '2', '3', '4', 'NEW']
-const sortOptions = [
-  { label: 'Total Points', value: 'totalPoints' },
-  { label: 'Points Per Game', value: 'pointsPerGame' },
-  { label: 'Price', value: 'price' },
-  { label: 'Goals', value: 'goals' },
-  { label: 'Assists', value: 'assists' },
-  { label: 'MOTM Votes', value: 'motmVotes' }
-]
+// Fix 1: Initialize with first option which is "All"
+const selectedPosition = ref(positions[0]) // "All"
+const selectedTeam = ref(teams[0]) // "All"
+const isExtended = ref(false)
+const loading = ref(false)
+// Fix 2: Make tableHeight reactive
+const tableHeight = ref(400) // Start with reasonable default
+let mounted = []
+let resizeObserver = null
 
 // Column definitions matching the main page structure
 const PLAYER_COLUMNS = [
@@ -150,35 +131,46 @@ const PLAYER_COLUMNS = [
   },
 ]
 
+const DEFAULT_PLAYER_COLUMNS = PLAYER_COLUMNS.filter((column) => column.default)
+
+const shouldMount = (condition, identifier) => {
+  if (condition || mounted.includes(identifier)) {
+    if (!mounted.includes(identifier)) {
+      mounted.push(identifier)
+    }
+    return true
+  }
+  return false
+}
+
 const filteredPlayers = computed(() => {
+  // Fix 1: Handle "All" values properly
+  const positionFilter = selectedPosition.value === 'All' ? null : selectedPosition.value
+  const teamFilter = selectedTeam.value === 'All' ? null : (selectedTeam.value === 'New' ? 'NEW' : selectedTeam.value)
+  
+  if (!props.players || props.players.length === 0) {
+    return []
+  }
+
   let filtered = [...props.players]
 
-  if (selectedPosition.value) {
-    filtered = filtered.filter(p => p.position === selectedPosition.value)
+  // Filter by position
+  if (positionFilter) {
+    filtered = filtered.filter(player => player.position === positionFilter)
   }
 
-  if (selectedTeam.value) {
-    filtered = filtered.filter(p => p.team === selectedTeam.value)
+  // Filter by team
+  if (teamFilter) {
+    filtered = filtered.filter(player => player.team === teamFilter)
   }
 
-  // Sort by selected field
-  filtered.sort((a, b) => {
-    const aVal = parseFloat(a[sortBy.value]?.toString().replace('£', '') || '0')
-    const bVal = parseFloat(b[sortBy.value]?.toString().replace('£', '') || '0')
-    
-    if (sortBy.value === 'price') {
-      return aVal - bVal // Ascending for price
-    }
-    return bVal - aVal // Descending for stats
-  })
-
-  // Transform data to match expected format and add visual indicators
+  // Transform data to match expected format
   return filtered.map(player => ({
     ...player,
-    playerName: player.playerName + (player.playerName.includes('?') ? ' ⚠️' : ''),
-    position: player.position,
-    team: player.team,
-    price: player.price,
+    playerName: player.playerName?.replace('?', '') || '',
+    position: player.position || '',
+    team: player.team || '',
+    price: player.price || '£0',
     totalPoints: player.totalPoints || '0',
     pointsPerGame: player.pointsPerGame || '0.0',
     gamesPlayed: player.gamesPlayed || '0',
@@ -191,105 +183,128 @@ const filteredPlayers = computed(() => {
   }))
 })
 
-onMounted(() => {
-  // Set table height similar to main page
-  const getTableHeight = () => {
-    const windowHeight = window.innerHeight
-    return Math.max(400, windowHeight - 400) // Leave space for header and filters
+// Fix 2: More robust height calculation
+const getTableHeight = () => {
+  try {
+    const container = document.querySelector(".container")
+    const actions = document.querySelector(".actions")
+    
+    if (!container || !actions) {
+      return 400 // fallback
+    }
+    
+    const containerRect = container.getBoundingClientRect()
+    const actionsRect = actions.getBoundingClientRect()
+    const viewportHeight = window.innerHeight
+    
+    // Calculate available space from bottom of actions to bottom of viewport
+    const availableHeight = viewportHeight - actionsRect.bottom - 32 // 32px padding
+    
+    // Ensure minimum height
+    return Math.max(300, Math.min(availableHeight, 800))
+  } catch (error) {
+    console.warn('Error calculating table height:', error)
+    return 400
+  }
+}
+
+// Fix 2: Better height management with ResizeObserver
+const updateTableHeight = () => {
+  const newHeight = getTableHeight()
+  if (newHeight !== tableHeight.value) {
+    tableHeight.value = newHeight
+  }
+}
+
+// NEW: Watch for filter changes and recalculate height
+watch([selectedPosition, selectedTeam, isExtended], async () => {
+  // Wait for DOM to update with new data
+  await nextTick()
+  // Small delay to ensure table has rendered with new data
+  setTimeout(() => {
+    updateTableHeight()
+  }, 50)
+}, { immediate: false })
+
+// Also watch for changes in the filtered data length
+watch(() => filteredPlayers.value.length, async () => {
+  await nextTick()
+  setTimeout(() => {
+    updateTableHeight()
+  }, 50)
+})
+
+onMounted(async () => {
+  // Wait for DOM to be fully ready
+  await nextTick()
+  
+  // Initial height calculation
+  setTimeout(() => {
+    updateTableHeight()
+  }, 100) // Small delay to ensure DOM is settled
+  
+  // Use ResizeObserver for better height tracking
+  if (window.ResizeObserver) {
+    resizeObserver = new ResizeObserver(() => {
+      updateTableHeight()
+    })
+    
+    const container = document.querySelector(".container")
+    if (container) {
+      resizeObserver.observe(container)
+    }
   }
   
-  tableHeight.value = getTableHeight()
-  
-  // Update on resize
-  window.addEventListener('resize', () => {
-    tableHeight.value = getTableHeight()
-  })
+  // Fallback to resize listener
+  window.addEventListener('resize', updateTableHeight)
+})
+
+onUnmounted(() => {
+  if (resizeObserver) {
+    resizeObserver.disconnect()
+  }
+  window.removeEventListener('resize', updateTableHeight)
 })
 </script>
 
 <style scoped>
-.stats-container {
-  padding: 1rem;
-}
-
-.stats-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.stats-header h2 {
-  margin: 0 0 0.5rem 0;
-  color: var(--p-text-color);
-}
-
-.stats-header p {
-  color: var(--p-text-muted-color);
-  margin: 0;
-}
-
-.filters {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.filter-group {
+.container {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  min-width: 150px;
+  padding-top: 1rem;
+  align-items: center;
 }
 
-.filter-group label {
-  font-size: 0.9rem;
-  color: var(--p-text-color);
-  font-weight: 500;
-}
-
-.stats-table-container {
-  margin-bottom: 1.5rem;
-}
-
-.stats-legend {
-  background: var(--p-surface-50);
-  padding: 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--p-surface-200);
-}
-
-.stats-legend h3 {
-  margin: 0 0 1rem 0;
-  color: var(--p-text-color);
-}
-
-.legend-items {
+.actions {
   display: flex;
-  flex-wrap: wrap;
+  width: 100%;
+  height: 2.5rem;
+  margin-bottom: 1rem;
+  align-items: center;
+  justify-content: flex-start;
   gap: 1rem;
+
+  @media (max-width: 768px) {
+    font-size: 12px;
+  }
 }
 
-.legend-item {
-  font-size: 0.9rem;
-  color: var(--p-text-muted-color);
-  background: var(--p-content-background);
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  border: 1px solid var(--p-surface-200);
+.show-extended {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
-@media (max-width: 768px) {
-  .filters {
-    flex-direction: column;
-  }
-  
-  .filter-group {
-    min-width: auto;
-  }
-  
-  .legend-items {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+::v-deep .p-disabled.p-select {
+  border-color: var(--p-select-disabled-background);
+}
+
+::v-deep .p-disabled .p-select-dropdown-icon {
+  color: var(--p-select-disabled-color);
+}
+
+::v-deep .p-select-label {
+  padding: 0.25rem;
+  padding-left: 0.5rem;
 }
 </style> 

@@ -1,10 +1,5 @@
 <template>
   <div class="rules-container">
-    <div class="rules-header">
-      <h2>Rules</h2>
-      <p>£10 to enter • Deadline: 2pm on 6th September</p>
-    </div>
-
     <div class="rules-content">
       <div class="rule-card">
         <h3>Team Selection</h3>
@@ -86,34 +81,18 @@
 </template>
 
 <script setup>
-// No imports needed
 </script>
 
 <style scoped>
 .rules-container {
-  padding: 1rem;
   max-width: 800px;
   margin: 0 auto;
   line-height: 1.6;
 }
 
-.rules-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.rules-header h2 {
-  margin: 0 0 0.5rem 0;
-  color: var(--p-text-color);
-}
-
-.rules-header p {
-  color: var(--p-text-muted-color);
-  margin: 0;
-}
-
 .rules-content {
   margin-bottom: 2rem;
+  padding: 0 1rem;
 }
 
 .rule-card {

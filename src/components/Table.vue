@@ -1,6 +1,13 @@
 <template>
   <div :class="{ hidden: !display }">
-    <DataTable v-once :value="data" scrollable :scrollHeight="`${props.tableHeight}px`" :virtual-scroller-options="{ itemSize: 39, appendOnly: true }">
+    <DataTable 
+      :value="data" 
+      scrollable 
+      :scrollHeight="`${props.tableHeight}px`" 
+      :virtual-scroller-options="virtualScrollerOptions"
+      :key="tableKey"
+      @virtual-scroller-options="onVirtualScrollerInit"
+    >
       <Column
         v-for="column in columns"
         :key="column.field"
@@ -14,10 +21,42 @@
 </template>
 
 <script setup>
+import { computed, watch, nextTick } from 'vue'
 import Column from "primevue/column"
 import DataTable from "primevue/datatable"
 
 const props = defineProps(["data", "columns", "tableHeight", "display", "sortable"])
+
+const virtualScrollerOptions = computed(() => ({
+  itemSize: 39,
+  appendOnly: false,
+  showLoader: false,
+  delay: 0
+}))
+
+const tableKey = computed(() => {
+  return `table-${props.data?.length || 0}-${props.display ? 'visible' : 'hidden'}`
+})
+
+const onVirtualScrollerInit = () => {
+  // Force refresh when virtual scroller initializes
+  nextTick(() => {
+    const dataTable = document.querySelector('.p-datatable')
+    if (dataTable && dataTable.__vue__) {
+      dataTable.__vue__.virtualScroller?.refresh()
+    }
+  })
+}
+
+// Watch for data changes and force virtual scroller refresh
+watch(() => props.data, () => {
+  nextTick(() => {
+    const virtualScroller = document.querySelector('.p-virtualscroller')
+    if (virtualScroller && virtualScroller.__vue__) {
+      virtualScroller.__vue__.refresh()
+    }
+  })
+}, { flush: 'post' })
 </script>
 
 <style scoped>
