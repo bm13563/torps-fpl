@@ -42,21 +42,25 @@
 
 <script setup>
 import { ref, computed, onMounted, nextTick, onUnmounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import Table from '../Table.vue'
 import Select from 'primevue/select'
 import ToggleSwitch from 'primevue/toggleswitch'
 
 const props = defineProps(['players'])
+const route = useRoute()
+const router = useRouter()
 
 // Fix 1: Use simple arrays like Main.vue for proper "All" display
 const positions = ['All', 'GK', 'DEF', 'MID', 'FOR']
 const teams = ['All', '1', '2', '3', '4', 'New']
 
-// Fix 1: Initialize with first option which is "All"
-const selectedPosition = ref(positions[0]) // "All"
-const selectedTeam = ref(teams[0]) // "All"
-const isExtended = ref(false)
+// Initialize from URL query parameters or defaults
+const selectedPosition = ref(route.query.position || positions[0])
+const selectedTeam = ref(route.query.team || teams[0]) 
+const isExtended = ref(route.query.extended === 'true' || false)
 const loading = ref(false)
+
 // Fix 2: Make tableHeight reactive
 const tableHeight = ref(400) // Start with reasonable default
 let mounted = []
@@ -216,15 +220,34 @@ const updateTableHeight = () => {
   }
 }
 
-// NEW: Watch for filter changes and recalculate height
-watch([selectedPosition, selectedTeam, isExtended], async () => {
-  // Wait for DOM to update with new data
-  await nextTick()
-  // Small delay to ensure table has rendered with new data
-  setTimeout(() => {
-    updateTableHeight()
-  }, 50)
-}, { immediate: false })
+// Watch for filter changes and update URL
+watch([selectedPosition, selectedTeam, isExtended], () => {
+  const currentQuery = { ...route.query }
+  
+  // Update filter parameters
+  if (selectedPosition.value !== positions[0]) {
+    currentQuery.position = selectedPosition.value
+  } else {
+    delete currentQuery.position
+  }
+  
+  if (selectedTeam.value !== teams[0]) {
+    currentQuery.team = selectedTeam.value
+  } else {
+    delete currentQuery.team
+  }
+  
+  if (isExtended.value) {
+    currentQuery.extended = 'true'
+  } else {
+    delete currentQuery.extended
+  }
+  
+  router.push({ 
+    path: '/team-picker', 
+    query: currentQuery
+  })
+})
 
 // Also watch for changes in the filtered data length
 watch(() => filteredPlayers.value.length, async () => {
