@@ -57,7 +57,7 @@
       </div>
       <Table
         v-if="shouldMount(!isPlayers && (!hasEmptyTeams || season !== '25/26'), 'teams')"
-        :data="teams.value"
+        :data="teams"
         :columns="TEAM_COLUMNS"
         :tableHeight="tableHeight"
         :display="!isPlayers && (!hasEmptyTeams || season !== '25/26')"
@@ -88,13 +88,13 @@ const $router = useRouter()
 
 // constants
 let players
+let teams
 let lastUpdated
 let tableHeight
 let mounted = []
 
 // reactive
 const loading = ref(true)
-const teams = ref([]) // Make teams reactive
 
 const tab = ref($route.query.tab || TABS[0])
 const season = ref($route.query.season || SEASONS[0])
@@ -103,7 +103,7 @@ const isExtended = ref(window.innerHeight > 768)
 const isPlayers = computed(() => tab.value === "Players")
 
 const hasEmptyTeams = computed(() => {
-  return !teams.value || teams.value.length === 0 || teams.value.every(team => !team.name || !team.owner)
+  return !teams || teams.length === 0 || teams.every(team => !team.name || !team.owner)
 })
 
 const getTableHeight = () => {
@@ -130,8 +130,8 @@ const loadData = async () => {
   loading.value = true
   
   players = await getPlayers(season.value)
-  const loadedTeams = await getTeams(season.value)
-  teams.value = loadedTeams.map((team, index) => ({ ...team, rank: index + 1 }))
+  teams = await getTeams(season.value)
+  teams = teams.map((team, index) => ({ ...team, rank: index + 1 }))
   
   loading.value = false
 }
