@@ -127,6 +127,17 @@ const buildTeamDataFromSource = (sourcePath, outputName) => {
   fs.writeFileSync(getPath(`public/${outputName}_render_teams.json`), JSON.stringify(data))
 }
 
+const copyPlayerPickerFile = (sourcePath) => {
+  const playerPickerPath = getPath(`${sourcePath}/player_picker.csv`)
+  if (fs.existsSync(playerPickerPath)) {
+    const playerPickerData = fs.readFileSync(playerPickerPath, "utf8")
+    fs.writeFileSync(getPath(`public/player_picker.csv`), playerPickerData)
+    console.log('Copied player_picker.csv to public directory')
+  } else {
+    console.warn(`player_picker.csv not found in ${sourcePath}`)
+  }
+}
+
 // Generate data for 24/25 season (last season with actual data)
 buildPlayerDataFromSource("data/24_25/club", "24_25")
 buildTeamDataFromSource("data/24_25/club", "24_25")
@@ -134,5 +145,8 @@ buildTeamDataFromSource("data/24_25/club", "24_25")
 // Generate data for 25/26 season (current season with zero data)
 buildPlayerDataFromSource("data/24_25/25_26", "25_26")
 buildTeamDataFromSource("data/24_25/25_26", "25_26")
+
+// Copy player picker file for team builder
+copyPlayerPickerFile("data/24_25/25_26")
 
 fs.writeFileSync(getPath(`public/last_updated.json`), JSON.stringify({ lastUpdated: new Date().toISOString() }))
