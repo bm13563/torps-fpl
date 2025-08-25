@@ -12,7 +12,7 @@
         :allowEmpty="false"
       />
       <div class="show-extended">
-        <p>Show all player data</p>
+        <p>All data</p>
         <ToggleSwitch v-model="isExtended"/>
       </div>
     </div>
@@ -96,7 +96,7 @@ const PLAYER_COLUMNS = [
   {
     field: "pointsPerGame",
     header: "PPG",
-    default: true,
+    default: false,
   },
   {
     field: "gamesPlayed",

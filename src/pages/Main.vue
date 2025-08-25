@@ -11,7 +11,7 @@
     <div class="actions">
       <Select v-model="season" :options="SEASONS" :allowEmpty="false"/>
       <div v-if="isPlayers" class="show-extended">
-        <p>Show all player data</p>
+        <p>All data</p>
         <ToggleSwitch v-model="isExtended"/>
       </div>
     </div>
