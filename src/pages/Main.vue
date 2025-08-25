@@ -235,7 +235,7 @@ onMounted(async () => {
 }
 
 .team-picker-btn {
-  margin-left: auto; /* Push button to the right */
+  margin-top: 1rem;
 }
 
 .coming-soon {

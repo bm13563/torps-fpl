@@ -13,12 +13,21 @@
     <!-- Validation and Budget -->
     <div class="validation-container">
       <div class="validation-message" :class="{ valid: isValid, invalid: !isValid }">
-        {{ validationMessage }}
+        <strong>{{isValid ? '' : 'Invalid Team: '}}</strong> {{ validationMessage }}
       </div>
       <div class="budget-display">
-        £{{ currentBudget }}
+        £{{ 100 - currentBudget }}
       </div>
     </div>
+
+    <!-- Export Button -->
+    <Button 
+      label="Copy Team to Clipboard" 
+      icon="pi pi-copy"
+      :disabled="!isValid"
+      @click="$emit('export-team')"
+      class="export-btn"
+    />
 
     <!-- Goalkeeper -->
     <div class="input-group">
@@ -110,15 +119,6 @@
         @change="updateTeam"
       />
     </div>
-
-    <!-- Export Button -->
-    <Button 
-      label="Copy Team to Clipboard" 
-      icon="pi pi-copy"
-      :disabled="!isValid"
-      @click="$emit('export-team')"
-      class="export-btn"
-    />
   </div>
 </template>
 
@@ -183,13 +183,20 @@ const allSelectedPlayers = computed(() => {
   return players
 })
 
-const twelfthManOptions = computed(() => [
-  { playerName: 'Yourself (Free)', displayName: 'Yourself (Free)', position: 'SELF', team: 'SELF', price: '£0' },
-  ...props.players.filter(p => p.team === 'NEW').map(p => ({
-    ...p,
-    displayName: `${p.playerName} (${p.price}, Team ${p.team})`
-  }))
-])
+const twelfthManOptions = computed(() => {
+  // Get all currently selected players in the main 11
+  const selectedPlayerNames = allSelectedPlayers.value.map(p => p.playerName)
+  
+  return [
+    { playerName: 'Yourself (Free)', displayName: 'Yourself (Free)', position: 'SELF', team: 'SELF', price: '£0' },
+    ...props.players
+      .filter(p => p.team === 'NEW' && !selectedPlayerNames.includes(p.playerName))
+      .map(p => ({
+        ...p,
+        displayName: `${p.playerName} (Team ${p.team})` // Removed price from display
+      }))
+  ]
+})
 
 // Simple validation logic
 const validation = computed(() => {
@@ -404,7 +411,7 @@ watch(() => props.selectedTeam, (newTeam) => {
   width: 100%;
   padding: 0.75rem;
   font-size: 1rem;
-  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 /* Mobile optimizations */

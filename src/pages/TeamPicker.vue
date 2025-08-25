@@ -240,9 +240,5 @@ const TAB_OPTIONS = ["Rules", "Player Stats", "Pick Team"]
   .selector {
     font-size: 18px;
   }
-  
-  .title h1 {
-    font-size: 20px;
-  }
 }
 </style> 

@@ -273,6 +273,8 @@ onUnmounted(() => {
   flex-direction: column;
   padding-top: 1rem;
   align-items: center;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 .actions {
