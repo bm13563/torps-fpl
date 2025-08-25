@@ -1,43 +1,47 @@
 <template>
-  <div class="container">
-    <!-- Header matching Main.vue exactly -->
-    <div class="title">
-      <img src="../assets/torps_logo.png" alt="logo" />
-      <span class="text">
-        <h1>Team Builder</h1>
-        <p class="back-link" @click="goBack">
-          ⬅️ Back to League
-        </p>
-      </span>
-    </div>
+  <div class="modal-overlay">
+    <div class="modal-container">
+      <!-- Close button in top right -->
+      <button class="close-button" @click="goBack" aria-label="Close">
+        ×
+      </button>
+      
+      <!-- Header matching Main.vue but without back link -->
+      <div class="title">
+        <img src="../assets/torps_logo.png" alt="logo" />
+        <span class="text">
+          <h1>Team Builder</h1>
+        </span>
+      </div>
 
-    <!-- Tab Navigation using SelectButton like Main.vue -->
-    <SelectButton 
-      v-model="activeTabLabel" 
-      :options="TAB_OPTIONS" 
-      :allowEmpty="false" 
-      class="selector"
-    />
-
-    <!-- Tab Content -->
-    <div class="tab-content">
-      <RulesTab v-if="activeTabLabel === 'Rules'" />
-      <StatsTab v-if="activeTabLabel === 'Player Stats'" :players="players" />
-      <PickerTab 
-        v-if="activeTabLabel === 'Pick Team'"
-        :players="players" 
-        :selectedTeam="selectedTeam"
-        :teamValidation="teamValidation"
-        @update-team="updateTeam"
-        @export-team="exportTeam"
+      <!-- Tab Navigation using SelectButton like Main.vue -->
+      <SelectButton 
+        v-model="activeTabLabel" 
+        :options="TAB_OPTIONS" 
+        :allowEmpty="false" 
+        class="selector"
       />
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <RulesTab v-if="activeTabLabel === 'Rules'" />
+        <StatsTab v-if="activeTabLabel === 'Player Stats'" :players="players" />
+        <PickerTab 
+          v-if="activeTabLabel === 'Pick Team'"
+          :players="players" 
+          :selectedTeam="selectedTeam"
+          :teamValidation="teamValidation"
+          @update-team="updateTeam"
+          @export-team="exportTeam"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import Button from 'primevue/button'
 import SelectButton from 'primevue/selectbutton'
 import RulesTab from '../components/teamPicker/RulesTab.vue'
@@ -45,7 +49,11 @@ import StatsTab from '../components/teamPicker/StatsTab.vue'
 import PickerTab from '../components/teamPicker/PickerTab.vue'
 
 const router = useRouter()
-const activeTabLabel = ref('Rules')
+const route = useRoute()
+
+// Initialize tab from URL query parameter, default to 'Rules'
+const activeTabLabel = ref(route.query.tab || 'Rules')
+
 const players = ref([])
 const selectedTeam = ref({
   teamName: '',
@@ -107,11 +115,27 @@ CAPTAIN: ${captain}
 }
 
 const goBack = () => {
-  router.push('/')
+  router.push('/?tab=Teams&season=25/26')
 }
+
+// Watch for tab changes and update URL
+watch(activeTabLabel, (newTab) => {
+  router.push({ 
+    path: '/team-picker', 
+    query: { tab: newTab } 
+  })
+})
 
 // Load player data when page mounts
 onMounted(async () => {
+  // Set initial URL with tab parameter if not already present
+  if (!route.query.tab) {
+    router.push({ 
+      path: '/team-picker', 
+      query: { tab: activeTabLabel.value } 
+    })
+  }
+  
   try {
     // Load the player picker CSV data - using same pattern as JSON files
     const csvPath = import.meta.env.VITE_FILE_ROOT + 'player_picker.csv'
@@ -164,13 +188,76 @@ const TAB_OPTIONS = ["Rules", "Player Stats", "Pick Team"]
 </script>
 
 <style scoped>
-/* Copy exact styles from Main.vue */
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Modal container */
+.modal-container {
+  background: #fffefd;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 1200px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+}
+
+/* Close button */
+.close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+  font-weight: normal;
+  line-height: 1;
+  font-family: Arial, sans-serif;
+}
+
+.close-button:hover {
+  background: #e9ecef;
+  color: #333;
+  border-color: #adb5bd;
+}
+
+/* Adjust title to not conflict with close button */
 .title {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 1rem;
-  margin-top: 1rem;
+  margin-top: 0;
+  padding-right: 3rem;
 }
 
 .title img {
@@ -185,42 +272,10 @@ const TAB_OPTIONS = ["Rules", "Player Stats", "Pick Team"]
   font-size: 24px;
 }
 
-.title p {
-  margin: 0;
-  margin-top: 0.25rem;
-  margin-left: 0.25rem;
-  font-size: 12px;
-  line-height: 1.2;
-}
-
 .title .text {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-}
-
-.back-link {
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-}
-
-.back-link:hover {
-  opacity: 0.8;
-}
-
-.arrow {
-  font-size: 16px;
-  margin-right: 4px;
-  vertical-align: middle;
-  line-height: 1;
-}
-
-.container {
-  display: flex;
-  flex-direction: column;
-  padding-top: 1rem;
-  align-items: center;
-  width: 100%;
 }
 
 .selector {
@@ -236,7 +291,30 @@ const TAB_OPTIONS = ["Rules", "Player Stats", "Pick Team"]
   max-width: 1200px;
 }
 
+/* Mobile optimizations */
 @media (max-width: 768px) {
+  .modal-overlay {
+    padding: 0.5rem;
+  }
+  
+  .modal-container {
+    max-height: 95vh;
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  
+  .close-button {
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 1.25rem;
+    width: 36px;
+    height: 36px;
+  }
+  
+  .title {
+    padding-right: 2.5rem;
+  }
+  
   .selector {
     font-size: 18px;
   }

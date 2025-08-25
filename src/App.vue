@@ -1,5 +1,12 @@
 <template>
-  <router-view />
+  <router-view v-slot="{ Component, route }">
+    <transition 
+      :name="route.name === 'team-picker' ? 'modal' : 'page'"
+      mode="out-in"
+    >
+      <component :is="Component" />
+    </transition>
+  </router-view>
 </template>
 
 <script setup></script>
@@ -37,5 +44,28 @@ body {
 #app {
   display: flex;
   justify-content: center;
+}
+
+/* Modal-like transitions */
+.modal-enter-active, .modal-leave-active {
+  transition: all 0.3s ease;
+}
+
+.modal-enter-from {
+  opacity: 0;
+  transform: scale(0.9) translateY(20px);
+}
+
+.modal-leave-to {
+  opacity: 0;
+  transform: scale(0.95) translateY(-10px);
+}
+
+.page-enter-active, .page-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.page-enter-from, .page-leave-to {
+  opacity: 0;
 }
 </style>
