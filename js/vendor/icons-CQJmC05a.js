@@ -1,4 +1,4 @@
-import{o as i,c as s,m as l,h as C}from"./runtime-core-ynBvhIh5.js";import{a as u}from"./utils-DJmc-F4Z.js";import{B as $,s as v}from"./core-BvHsUG4k.js";var w=`
+import{o as i,c as s,m as l,h as C}from"./runtime-core-CLCFghaB.js";import{a as u}from"./utils-DJmc-F4Z.js";import{B as $,s as v}from"./core-Dv4hUPYy.js";var w=`
 .p-icon {
     display: inline-block;
     vertical-align: baseline;
