@@ -40,21 +40,6 @@
         :display="isPlayers && !isExtended"
         :sortable="false"
       />
-      <div
-        v-if="!isPlayers && hasEmptyTeams && season === '25/26'"
-        class="coming-soon"
-        :style="{ height: tableHeight + 'px' }"
-      >
-        <h3>Entries Open!</h3>
-        <p>Please submit your teams for the 25/26 season.</p>
-        <Button 
-          v-if="season === '25/26'"
-          label="Build Team" 
-          icon="pi pi-users"
-          @click="goToTeamPicker"
-          class="team-picker-btn"
-        />
-      </div>
       <Table
         v-if="shouldMount(!isPlayers && (!hasEmptyTeams || season !== '25/26'), 'teams')"
         :data="teams"

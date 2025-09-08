@@ -143,10 +143,10 @@ buildPlayerDataFromSource("data/24_25/club", "24_25")
 buildTeamDataFromSource("data/24_25/club", "24_25")
 
 // Generate data for 25/26 season (current season with zero data)
-buildPlayerDataFromSource("data/24_25/25_26", "25_26")
-buildTeamDataFromSource("data/24_25/25_26", "25_26")
+buildPlayerDataFromSource("data/25_26", "25_26")
+buildTeamDataFromSource("data/25_26", "25_26")
 
 // Copy player picker file for team builder
-copyPlayerPickerFile("data/24_25/25_26")
+copyPlayerPickerFile("data/25_26")
 
 fs.writeFileSync(getPath(`public/last_updated.json`), JSON.stringify({ lastUpdated: new Date().toISOString() }))
