@@ -43,7 +43,7 @@
       <div
         v-if="!isPlayers && season === '25/26'"
         class="coming-soon"
-        :style="{ height: tableHeight + 'px' }"
+        :style="{ height: tableHeight + 'px', marginBottom: '2rem' }"
       >
         <h3>Entries Open!</h3>
         <p>Please submit your teams for the 25/26 season.</p>
