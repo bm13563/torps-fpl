@@ -9,14 +9,10 @@ const routes = [
     name: "main",
     component: Main,
   },
-  // {
-  //   path: "/team-picker",
-  //   name: "team-picker",
-  //   component: TeamPicker,
-  // },
   {
     path: "/team-picker",
-    redirect: "/",
+    name: "team-picker",
+    component: TeamPicker,
   },
 ]
 
