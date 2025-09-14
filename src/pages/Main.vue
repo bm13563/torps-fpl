@@ -40,7 +40,7 @@
         :display="isPlayers && !isExtended"
         :sortable="false"
       />
-      <div
+      <!-- <div
         v-if="!isPlayers && season === '25/26'"
         class="coming-soon"
         :style="{ height: tableHeight + 'px', marginBottom: '2rem' }"
@@ -54,7 +54,7 @@
           @click="goToTeamPicker"
           class="team-picker-btn"
         />
-      </div>
+      </div> -->
       <Table
         v-if="shouldMount(!isPlayers && (!hasEmptyTeams || season !== '25/26'), 'teams')"
         :data="teams"
