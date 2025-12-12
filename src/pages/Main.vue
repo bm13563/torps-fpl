@@ -11,8 +11,12 @@
     <div class="actions">
       <Select v-model="season" :options="SEASONS" :allowEmpty="false"/>
       <div v-if="isPlayers" class="show-extended">
-        <p>All data</p>
         <ToggleSwitch v-model="isExtended"/>
+        <p>All data</p>
+      </div>
+      <div class="tom-newman-mode">
+        <ToggleSwitch v-model="tomNewmanMode"/>
+        <p>Tom Newman mode</p>
       </div>
     </div>
     <ProgressSpinner
@@ -40,28 +44,22 @@
         :display="isPlayers && !isExtended"
         :sortable="false"
       />
-      <!-- <div
-        v-if="!isPlayers && season === '25/26'"
-        class="coming-soon"
-        :style="{ height: tableHeight + 'px', marginBottom: '2rem' }"
-      >
-        <h3>Entries Open!</h3>
-        <p>Please submit your teams for the 25/26 season.</p>
-        <Button 
-          v-if="season === '25/26'"
-          label="Build Team" 
-          icon="pi pi-users"
-          @click="goToTeamPicker"
-          class="team-picker-btn"
-        />
-      </div> -->
       <Table
-        v-if="shouldMount(!isPlayers && (!hasEmptyTeams || season !== '25/26'), 'teams')"
+        v-if="shouldMount(!isPlayers, 'teams')"
         :data="teams"
         :columns="TEAM_COLUMNS"
         :tableHeight="tableHeight"
-        :display="!isPlayers && (!hasEmptyTeams || season !== '25/26')"
+        :display="!isPlayers"
         :sortable="false"
+      />
+      
+      <!-- Floating Action Button for Team Builder -->
+      <Button 
+        label="Build Team" 
+        icon="pi pi-users"
+        @click="goToTeamPicker"
+        class="fab-team-builder"
+        aria-label="Build your fantasy team"
       />
     </template>
   </div>
@@ -87,14 +85,17 @@ const $route = useRoute()
 const $router = useRouter()
 
 // constants
-let players
-let teams
 let lastUpdated
 let tableHeight
 let mounted = []
 
 // reactive
 const loading = ref(true)
+const tomNewmanMode = ref(false)
+const players = ref([])
+const teams = ref([])
+const originalPlayers = ref([])
+const originalTeams = ref([])
 
 const tab = ref($route.query.tab || TABS[0])
 const season = ref($route.query.season || SEASONS[0])
@@ -129,12 +130,39 @@ const goToTeamPicker = () => {
 const loadData = async () => {
   loading.value = true
   
-  players = await getPlayers(season.value)
-  teams = await getTeams(season.value)
-  teams = teams.map((team, index) => ({ ...team, rank: index + 1 }))
+  originalPlayers.value = await getPlayers(season.value)
+  originalTeams.value = await getTeams(season.value)
+  originalTeams.value = originalTeams.value.map((team, index) => ({ ...team, rank: index + 1 }))
+  
+  // Apply Tom Newman mode if active
+  applyTomNewmanMode()
   
   loading.value = false
 }
+
+const applyTomNewmanMode = () => {
+  if (tomNewmanMode.value) {
+    // Transform all player names to "Tom Newman"
+    players.value = originalPlayers.value.map(player => ({
+      ...player,
+      Player: 'Tom Newman'
+    }))
+    
+    // Transform all team owner names to "Tom Newman"
+    teams.value = originalTeams.value.map(team => ({
+      ...team,
+      owner: 'Tom Newman'
+    }))
+  } else {
+    // Use original data
+    players.value = [...originalPlayers.value]
+    teams.value = [...originalTeams.value]
+  }
+}
+
+watch(tomNewmanMode, () => {
+  applyTomNewmanMode()
+})
 
 watch(tab, (newTab) => {
   $router.push({ query: { tab: newTab, season: season.value } })
@@ -234,53 +262,47 @@ onMounted(async () => {
   align-items: center;
 }
 
-.team-picker-btn {
-  margin-top: 1rem;
-}
-
-.coming-soon {
+.tom-newman-mode {
   display: flex;
-  flex-direction: column;
+  gap: 1rem;
   align-items: center;
-  justify-content: center;
-  background: var(--p-content-background);
-  border: 1px solid var(--p-surface-200);
-  border-radius: 0.5rem;
-  color: var(--p-text-color);
-  padding: 2rem;
-  margin: 0;
-  max-width: 90vw;
-  width: 100%;
-  box-sizing: border-box;
-  
-  @media (max-width: 768px) {
-    width: 90vw;
-    padding: 1.5rem 1rem;
-  }
 }
 
-.coming-soon h3 {
-  margin: 0 0 1rem 0;
-  font-size: 1.5rem;
-  color: var(--p-text-color);
-  text-align: center;
-  
-  @media (max-width: 768px) {
-    font-size: 1.25rem;
-    margin: 0 0 0.75rem 0;
-  }
-}
-
-.coming-soon p {
-  margin: 0;
-  color: var(--p-text-muted-color);
-  text-align: center;
+/* Floating Action Button */
+.fab-team-builder {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 2rem;
+  padding: 0.75rem 1.5rem;
   font-size: 1rem;
-  line-height: 1.5;
+  font-weight: 600;
+  transition: all 0.3s ease;
   
   @media (max-width: 768px) {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+  }
+  
+  @media (max-width: 480px) {
+    bottom: 1rem;
+    right: 1rem;
+    padding: 0.7rem 1.1rem;
     font-size: 0.9rem;
   }
+}
+
+.fab-team-builder:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.fab-team-builder:active {
+  transform: translateY(0);
 }
 </style>
 

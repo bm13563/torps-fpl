@@ -122,7 +122,11 @@ const copyPlayerPickerFile = (sourcePath) => {
   }
 }
 
-// Generate data for 25/26 season (current season with zero data)
+// Generate data for 24/25 season (completed season)
+buildPlayerDataFromSource("data/24_25", "24_25")
+buildTeamDataFromSource("data/24_25", "24_25")
+
+// Generate data for 25/26 season (current season)
 buildPlayerDataFromSource("data/25_26", "25_26")
 buildTeamDataFromSource("data/25_26", "25_26")
 
