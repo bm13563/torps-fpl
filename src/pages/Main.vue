@@ -85,12 +85,12 @@ const $route = useRoute()
 const $router = useRouter()
 
 // constants
-let lastUpdated
 let tableHeight
 let mounted = []
 
 // reactive
 const loading = ref(true)
+const lastUpdated = ref(null)
 const tomNewmanMode = ref(false)
 const players = ref([])
 const teams = ref([])
@@ -178,8 +178,8 @@ onMounted(async () => {
 
   await loadData()
 
-  lastUpdated = await getLastUpdated()
-  lastUpdated = new Date(lastUpdated.lastUpdated)
+  const lastUpdatedData = await getLastUpdated()
+  lastUpdated.value = new Date(lastUpdatedData.lastUpdated)
 
   $router.push({ query: { tab: tab.value, season: season.value } })
 })
@@ -240,6 +240,7 @@ onMounted(async () => {
 
   @media (max-width: 768px) {
     font-size: 12px;
+    gap: 0.5rem;
   }
 }
 
@@ -258,14 +259,42 @@ onMounted(async () => {
 
 .show-extended {
   display: flex;
-  gap: 1rem;
+  gap: 0.25rem;
   align-items: center;
+}
+
+.show-extended p {
+  font-size: 14px;
+  white-space: nowrap;
+  margin-left: -0.25rem;
+  
+  @media (max-width: 768px) {
+    font-size: 11px;
+  }
+}
+
+.show-extended ::v-deep .p-toggleswitch {
+  transform: scale(0.75);
 }
 
 .tom-newman-mode {
   display: flex;
-  gap: 1rem;
+  gap: 0.25rem;
   align-items: center;
+}
+
+.tom-newman-mode p {
+  font-size: 14px;
+  white-space: nowrap;
+  margin-left: -0.25rem;
+  
+  @media (max-width: 768px) {
+    font-size: 11px;
+  }
+}
+
+.tom-newman-mode ::v-deep .p-toggleswitch {
+  transform: scale(0.75);
 }
 
 /* Floating Action Button */
