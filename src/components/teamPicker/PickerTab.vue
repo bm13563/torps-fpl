@@ -16,7 +16,7 @@
         <strong>{{isValid ? '' : 'Invalid Team: '}}</strong> {{ validationMessage }}
       </div>
       <div class="budget-display">
-        £{{ 100 - currentBudget }}
+        £{{ TEAM_RULES.maxBudget - currentBudget }}
       </div>
     </div>
 
@@ -128,6 +128,7 @@ import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import MultiSelect from 'primevue/multiselect'
+import { TEAM_RULES } from '../../config/teamRules'
 
 const props = defineProps(['players', 'selectedTeam', 'teamValidation'])
 const emit = defineEmits(['update-team', 'export-team'])
@@ -198,7 +199,7 @@ const twelfthManOptions = computed(() => {
   ]
 })
 
-// Simple validation logic
+// Simple validation logic using TEAM_RULES config
 const validation = computed(() => {
   const allPlayers = allSelectedPlayers.value
   const totalPlayers = allPlayers.length
@@ -215,31 +216,31 @@ const validation = computed(() => {
     return { valid: false, message: 'Select some players' }
   }
   
-  if (totalPlayers !== 11) {
-    return { valid: false, message: `Select 11 players (currently ${totalPlayers})` }
+  if (totalPlayers !== TEAM_RULES.totalPlayers) {
+    return { valid: false, message: `Select ${TEAM_RULES.totalPlayers} players (currently ${totalPlayers})` }
   }
   
-  // Check formation (3-5 defenders, 3-5 midfielders, 1-3 attackers)
+  // Check formation
   const defCount = localTeam.value.defenders.length
   const midCount = localTeam.value.midfielders.length  
   const attCount = localTeam.value.attackers.length
   
-  if (defCount < 3 || defCount > 5) {
-    return { valid: false, message: 'Select 3-5 defenders' }
+  if (defCount < TEAM_RULES.defenders.min || defCount > TEAM_RULES.defenders.max) {
+    return { valid: false, message: `Select ${TEAM_RULES.defenders.min}-${TEAM_RULES.defenders.max} defenders` }
   }
   
-  if (midCount < 3 || midCount > 5) {
-    return { valid: false, message: 'Select 3-5 midfielders' }
+  if (midCount < TEAM_RULES.midfielders.min || midCount > TEAM_RULES.midfielders.max) {
+    return { valid: false, message: `Select ${TEAM_RULES.midfielders.min}-${TEAM_RULES.midfielders.max} midfielders` }
   }
   
-  if (attCount < 1 || attCount > 3) {
-    return { valid: false, message: 'Select 1-3 attackers' }
+  if (attCount < TEAM_RULES.attackers.min || attCount > TEAM_RULES.attackers.max) {
+    return { valid: false, message: `Select ${TEAM_RULES.attackers.min}-${TEAM_RULES.attackers.max} attackers` }
   }
   
   // Check budget
   const totalCost = allPlayers.reduce((sum, player) => sum + parseFloat(player.price.replace('£', '')), 0)
-  if (totalCost > 100) {
-    return { valid: false, message: `Over budget: £${totalCost}/£100` }
+  if (totalCost > TEAM_RULES.maxBudget) {
+    return { valid: false, message: `Over budget: £${totalCost}/£${TEAM_RULES.maxBudget}` }
   }
   
   // Check team distribution
@@ -252,18 +253,19 @@ const validation = computed(() => {
     }
   })
   
-  if (newPlayerCount < 1) {
-    return { valid: false, message: 'Select at least 1 NEW player' }
+  // Only check for new players if required by config
+  if (TEAM_RULES.requireNewPlayer && newPlayerCount < TEAM_RULES.minNewPlayers) {
+    return { valid: false, message: `Select at least ${TEAM_RULES.minNewPlayers} NEW player${TEAM_RULES.minNewPlayers > 1 ? 's' : ''}` }
   }
   
   const maxFromSingleTeam = Math.max(...Object.values(teamCounts), 0)
-  if (maxFromSingleTeam > 4) {
-    return { valid: false, message: 'Max 4 players from one team' }
+  if (maxFromSingleTeam > TEAM_RULES.maxPlayersFromSingleTeam) {
+    return { valid: false, message: `Max ${TEAM_RULES.maxPlayersFromSingleTeam} players from one team` }
   }
   
   const teamsRepresented = Object.keys(teamCounts).length
-  if (teamsRepresented < 4) {
-    return { valid: false, message: 'Select players from all 4 teams' }
+  if (teamsRepresented < TEAM_RULES.totalTeamsInLeague) {
+    return { valid: false, message: `Select players from all ${TEAM_RULES.totalTeamsInLeague} teams` }
   }
   
   if (!localTeam.value.captain) {

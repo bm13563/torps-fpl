@@ -4,21 +4,14 @@
       <div class="rule-card">
         <h3>Team Selection</h3>
         <ul>
-          <li>Pick 11 players from a £100 budget</li>
-          <li>At least 1 NEW player required</li>
-          <li>At least 1 player from each team (1, 2, 3, 4)</li>
-          <li>No more than 4 players from a single team</li>
-          <li>You cannot pick yourself</li>
+          <li v-for="rule in rulesText.teamSelection" :key="rule">{{ rule }}</li>
         </ul>
       </div>
 
       <div class="rule-card">
         <h3>Captain & 12th Man</h3>
         <ul>
-          <li>Pick a captain who scores 2x points</li>
-          <li>Cannot captain yourself/12th man</li>
-          <li>You are your team's 12th man (free)</li>
-          <li>If not playing, pick a NEW player as 12th man</li>
+          <li v-for="rule in rulesText.captainAndTwelfthMan" :key="rule">{{ rule }}</li>
         </ul>
       </div>
 
@@ -66,6 +59,9 @@
 </template>
 
 <script setup>
+import { getRulesText } from '../../config/teamRules'
+
+const rulesText = getRulesText()
 </script>
 
 <style scoped>
