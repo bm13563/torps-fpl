@@ -116,7 +116,9 @@ const copyPlayerPickerFile = (sourcePath) => {
   const playerPickerPath = getPath(`${sourcePath}/player_picker.csv`)
   if (fs.existsSync(playerPickerPath)) {
     const playerPickerData = fs.readFileSync(playerPickerPath, "utf8")
-    fs.writeFileSync(getPath(`public/player_picker.csv`), playerPickerData)
+    const parsed = papaparse.parse(playerPickerData, { header: false, delimiter: "," })
+    const tsvData = parsed.data.map(row => row.join("\t")).join("\n")
+    fs.writeFileSync(getPath(`public/player_picker.csv`), tsvData)
   } else {
     console.warn(`player_picker.csv not found in ${sourcePath}`)
   }
