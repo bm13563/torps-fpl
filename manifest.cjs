@@ -128,11 +128,15 @@ const copyPlayerPickerFile = (sourcePath) => {
 buildPlayerDataFromSource("data/24_25", "24_25")
 buildTeamDataFromSource("data/24_25", "24_25")
 
-// Generate data for 25/26 season (current season)
+// Generate data for 25/26 season (completed season)
 buildPlayerDataFromSource("data/25_26", "25_26")
 buildTeamDataFromSource("data/25_26", "25_26")
 
+// Generate data for 26/27 season (current season)
+buildPlayerDataFromSource("data/26_27", "26_27")
+buildTeamDataFromSource("data/26_27", "26_27")
+
 // Copy player picker file for team builder
-copyPlayerPickerFile("data/25_26")
+copyPlayerPickerFile("data/26_27")
 
 fs.writeFileSync(getPath(`public/last_updated.json`), JSON.stringify({ lastUpdated: new Date().toISOString() }))
