@@ -115,7 +115,7 @@ CAPTAIN: ${captain}
 }
 
 const goBack = () => {
-  router.push('/?tab=Teams&season=25/26')
+  router.push('/?tab=Teams&season=26/27')
 }
 
 // Watch for tab changes and update URL

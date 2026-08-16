@@ -14,10 +14,6 @@
         <ToggleSwitch v-model="isExtended"/>
         <p>All data</p>
       </div>
-      <div class="tom-newman-mode">
-        <ToggleSwitch v-model="tomNewmanMode"/>
-        <p>Tom Newman mode</p>
-      </div>
     </div>
     <ProgressSpinner
       v-if="loading"
@@ -91,11 +87,8 @@ let mounted = []
 // reactive
 const loading = ref(true)
 const lastUpdated = ref(null)
-const tomNewmanMode = ref(false)
 const players = ref([])
 const teams = ref([])
-const originalPlayers = ref([])
-const originalTeams = ref([])
 
 const tab = ref($route.query.tab || TABS[0])
 const season = ref($route.query.season || SEASONS[0])
@@ -129,40 +122,13 @@ const goToTeamPicker = () => {
 
 const loadData = async () => {
   loading.value = true
-  
-  originalPlayers.value = await getPlayers(season.value)
-  originalTeams.value = await getTeams(season.value)
-  originalTeams.value = originalTeams.value.map((team, index) => ({ ...team, rank: index + 1 }))
-  
-  // Apply Tom Newman mode if active
-  applyTomNewmanMode()
-  
+
+  players.value = await getPlayers(season.value)
+  const teamsData = await getTeams(season.value)
+  teams.value = teamsData.map((team, index) => ({ ...team, rank: index + 1 }))
+
   loading.value = false
 }
-
-const applyTomNewmanMode = () => {
-  if (tomNewmanMode.value) {
-    // Transform all player names to "Tom Newman"
-    players.value = originalPlayers.value.map(player => ({
-      ...player,
-      Player: 'Tom Newman'
-    }))
-    
-    // Transform all team owner names to "Tom Newman"
-    teams.value = originalTeams.value.map(team => ({
-      ...team,
-      owner: 'Tom Newman'
-    }))
-  } else {
-    // Use original data
-    players.value = [...originalPlayers.value]
-    teams.value = [...originalTeams.value]
-  }
-}
-
-watch(tomNewmanMode, () => {
-  applyTomNewmanMode()
-})
 
 watch(tab, (newTab) => {
   $router.push({ query: { tab: newTab, season: season.value } })
@@ -277,26 +243,6 @@ onMounted(async () => {
   transform: scale(0.75);
 }
 
-.tom-newman-mode {
-  display: flex;
-  gap: 0.25rem;
-  align-items: center;
-}
-
-.tom-newman-mode p {
-  font-size: 14px;
-  white-space: nowrap;
-  margin-left: -0.25rem;
-  
-  @media (max-width: 768px) {
-    font-size: 11px;
-  }
-}
-
-.tom-newman-mode ::v-deep .p-toggleswitch {
-  transform: scale(0.75);
-}
-
 /* Floating Action Button */
 .fab-team-builder {
   position: fixed;
@@ -338,7 +284,7 @@ onMounted(async () => {
 <script>
 const TABS = ["Players", "Teams"]
 
-const SEASONS = ["25/26", "24/25"]
+const SEASONS = ["26/27", "25/26", "24/25"]
 
 const TEAM_COLUMNS = [
   {
