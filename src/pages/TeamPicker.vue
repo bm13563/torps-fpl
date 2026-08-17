@@ -280,6 +280,7 @@ const TAB_OPTIONS = ["Rules", "Player Stats", "Pick Team"]
 
 .selector {
   margin-top: 0;
+  margin-bottom: 1.5rem;
   text-align: center;
   font-size: 24px;
   display: flex;

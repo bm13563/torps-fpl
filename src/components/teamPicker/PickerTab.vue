@@ -111,14 +111,23 @@
 
     <div class="input-group">
       <label><strong>12th Man</strong></label>
-      <Select 
-        v-model="localTeam.twelfthMan" 
+      <Select
+        v-model="localTeam.twelfthMan"
         :options="twelfthManOptions"
         optionLabel="displayName"
         placeholder="Select 12th man"
         @change="updateTeam"
       />
     </div>
+
+    <!-- Export Button (bottom) -->
+    <Button
+      label="Copy Team to Clipboard"
+      icon="pi pi-copy"
+      :disabled="!isValid"
+      @click="$emit('export-team')"
+      class="export-btn export-btn-bottom"
+    />
   </div>
 </template>
 
@@ -414,6 +423,11 @@ watch(() => props.selectedTeam, (newTeam) => {
   padding: 0.75rem;
   font-size: 1rem;
   margin-bottom: 1rem;
+}
+
+.export-btn-bottom {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
 }
 
 /* Mobile optimizations */
