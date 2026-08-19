@@ -18,11 +18,10 @@
       <div class="rule-card">
         <h3>Prizes</h3>
         <ul>
-          <li><strong>1st:</strong> 2/3 of prize pot</li>
-          <li><strong>2nd:</strong> Potentially Club Kit</li>
-          <li><strong>3rd:</strong> TBD</li>
+          <li><strong>1st:</strong> 2/3 of prize pot (1/3 of prize pot for Second Chance League)</li>
+          <li><strong>2nd:</strong> Club Kit</li>
+          <li><strong>3rd:</strong> Club Kit</li>
         </ul>
-        <p class="prize-note">£175 rollover guaranteed + Second Chance League</p>
       </div>
 
       <div class="rule-card">
@@ -111,14 +110,6 @@ const rulesText = getRulesText()
 
 .rule-card p:last-child {
   margin-bottom: 0;
-}
-
-.prize-note {
-  margin-top: 1rem !important;
-  margin-bottom: 0 !important;
-  font-size: 0.9rem;
-  color: var(--p-text-muted-color);
-  font-style: italic;
 }
 
 .contact-list {
