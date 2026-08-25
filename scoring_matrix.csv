@@ -1,0 +1,8 @@
+﻿Torpedo Fantasy Football: Points Scoring Matrix,,,,,,,,,,,,,,,,,
+,Individual Minutes Played,,,Individual Match Stats,,,,,,,,Team Match Stats,,,,Individual Awards,
+,1-45,46-89,90,"MOTM 
+Vote",Goal,Assist,Yellow Card,Red Card,Own Goal,Penalty Miss,Penalty Save,Clean Sheet,Win,Draw,Loss,Player's POTY,Manager's POTY
+GK,1,2,3,1,10,10,-2,-10,-5,-5,20,10,2,1,0,20,20
+DEF,1,2,3,1,5,5,-2,-10,-5,-5,20,7,2,1,0,20,20
+MID,1,2,3,1,4,4,-2,-10,-5,-5,20,4,2,1,0,20,20
+ST,1,2,3,1,3,3,-2,-10,-5,-5,20,1,2,1,0,20,20
