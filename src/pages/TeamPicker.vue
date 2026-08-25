@@ -10,7 +10,7 @@
       <div class="title">
         <img src="../assets/torps_logo.png" alt="logo" />
         <span class="text">
-          <h1>Team Builder</h1>
+          <h1>More Info</h1>
         </span>
       </div>
 
@@ -25,6 +25,7 @@
       <!-- Tab Content -->
       <div class="tab-content">
         <RulesTab v-if="activeTabLabel === 'Rules'" />
+        <ScoringTab v-if="activeTabLabel === 'Scoring'" />
         <StatsTab v-if="activeTabLabel === 'Player Stats'" :players="players" />
         <PickerTab 
           v-if="activeTabLabel === 'Pick Team'"
@@ -45,6 +46,7 @@ import { useRouter, useRoute } from 'vue-router'
 import Button from 'primevue/button'
 import SelectButton from 'primevue/selectbutton'
 import RulesTab from '../components/teamPicker/RulesTab.vue'
+import ScoringTab from '../components/teamPicker/ScoringTab.vue'
 import StatsTab from '../components/teamPicker/StatsTab.vue'
 import PickerTab from '../components/teamPicker/PickerTab.vue'
 
@@ -184,7 +186,7 @@ onMounted(async () => {
 </script>
 
 <script>
-const TAB_OPTIONS = ["Rules", "Player Stats", "Pick Team"]
+const TAB_OPTIONS = ["Rules", "Scoring", "Player Stats", "Pick Team"]
 </script>
 
 <style scoped>

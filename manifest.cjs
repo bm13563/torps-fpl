@@ -124,6 +124,16 @@ const copyPlayerPickerFile = (sourcePath) => {
   }
 }
 
+const copyScoringMatrixFile = () => {
+  const scoringMatrixPath = getPath(`data/scoring_matrix.csv`)
+  if (fs.existsSync(scoringMatrixPath)) {
+    const scoringMatrixData = fs.readFileSync(scoringMatrixPath, "utf8")
+    fs.writeFileSync(getPath(`public/scoring_matrix.csv`), scoringMatrixData)
+  } else {
+    console.warn(`scoring_matrix.csv not found in data/`)
+  }
+}
+
 // Generate data for 24/25 season (completed season)
 buildPlayerDataFromSource("data/24_25", "24_25")
 buildTeamDataFromSource("data/24_25", "24_25")
@@ -138,5 +148,8 @@ buildTeamDataFromSource("data/26_27", "26_27")
 
 // Copy player picker file for team builder
 copyPlayerPickerFile("data/26_27")
+
+// Copy scoring matrix for the scoring tab
+copyScoringMatrixFile()
 
 fs.writeFileSync(getPath(`public/last_updated.json`), JSON.stringify({ lastUpdated: new Date().toISOString() }))
