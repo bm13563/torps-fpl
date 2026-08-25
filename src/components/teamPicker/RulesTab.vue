@@ -33,6 +33,7 @@
           <li>Team performance points given to anyone who plays</li>
           <li>Player assigned to team they played most for last season</li>
           <li>Players with "?" have poor availability in first half</li>
+          <li>See the <strong>Scoring</strong> tab for full details</li>
         </ul>
       </div>
 

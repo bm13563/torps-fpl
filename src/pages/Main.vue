@@ -50,12 +50,12 @@
       />
       
       <!-- Floating Action Button for Team Builder -->
-      <Button 
-        label="Build Team" 
-        icon="pi pi-users"
+      <Button
+        label="More Info"
+        icon="pi pi-info-circle"
         @click="goToTeamPicker"
         class="fab-team-builder"
-        aria-label="Build your fantasy team"
+        aria-label="More info: rules, scoring, stats and team builder"
       />
     </template>
   </div>
