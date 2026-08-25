@@ -26,7 +26,7 @@
       <div class="tab-content">
         <RulesTab v-if="activeTabLabel === 'Rules'" />
         <ScoringTab v-if="activeTabLabel === 'Scoring'" />
-        <StatsTab v-if="activeTabLabel === 'Player Stats'" :players="players" />
+        <StatsTab v-if="activeTabLabel === 'Stats'" :players="players" />
         <PickerTab 
           v-if="activeTabLabel === 'Pick Team'"
           :players="players" 
@@ -186,7 +186,7 @@ onMounted(async () => {
 </script>
 
 <script>
-const TAB_OPTIONS = ["Rules", "Scoring", "Player Stats", "Pick Team"]
+const TAB_OPTIONS = ["Rules", "Scoring", "Stats", "Pick Team"]
 </script>
 
 <style scoped>
@@ -289,6 +289,16 @@ const TAB_OPTIONS = ["Rules", "Scoring", "Player Stats", "Pick Team"]
   align-items: center;
 }
 
+/* Make every tab an equal-width slice so short labels (Rules, Scoring)
+   match the wider ones (Pick Team) instead of shrinking to their text. */
+.selector :deep(.p-togglebutton) {
+  flex: 1 1 0;
+}
+
+.selector :deep(.p-togglebutton-label) {
+  white-space: nowrap;
+}
+
 .tab-content {
   width: 100%;
   max-width: 1200px;
@@ -319,7 +329,14 @@ const TAB_OPTIONS = ["Rules", "Scoring", "Player Stats", "Pick Team"]
   }
   
   .selector {
-    font-size: 18px;
+    font-size: 16px;
+    width: 100%;
+  }
+
+  /* Tighten padding so four equal tabs fit a narrow phone without overflowing */
+  .selector :deep(.p-togglebutton) {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
   }
 }
 </style> 
